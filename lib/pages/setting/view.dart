@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:xlist/common/index.dart';
+import 'package:xlist/generated/l10n.dart';
 import 'package:xlist/storages/index.dart';
 import 'package:xlist/routes/app_pages.dart';
 import 'package:xlist/pages/setting/index.dart';
@@ -76,6 +77,23 @@ class SettingPage extends GetView<SettingController> {
 
   @override
   Widget build(BuildContext context) {
+    // 自动启动Alist
+    final autoStart = [
+      _buildListTile(
+        title: S.of(context).bootAutoStartService,
+        icon: Icons.perm_media_rounded,
+        trailing: Obx(
+          () => CupertinoSwitch(
+            value: controller.isShowPreview.value,
+            onChanged: (value) {
+              controller.isShowPreview.value = value;
+              Get.find<PreferencesStorage>().isShowPreview.val = value;
+              Get.find<HomepageController>().isShowPreview.value = value;
+            },
+          ),
+        ),
+      ),
+    ];
     // 通用高级功能列表项
     final favorite = [
       _buildListTile(
@@ -132,7 +150,12 @@ class SettingPage extends GetView<SettingController> {
                   ),
                   children: [
                     _buildListTile(
-                      title: 'alist',
+                      title: "Log",
+                      icon: Icons.star_rounded,
+                      onTap: () => Get.toNamed(Routes.LOG),
+                    ),
+                    _buildListTile(
+                      title: S.of(context).appName,
                       icon: Icons.star_rounded,
                       onTap: () => Get.toNamed(Routes.SETTING_ALIST),
                     ),

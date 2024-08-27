@@ -5,11 +5,10 @@ class Repository {
   Repository() {}
 
   // Dio.get
-  static Future<Response<T>> get<T>(
-    String path, {
-    Map<String, dynamic>? parameters,
-  }) {
-    return DioService.to.dio.get(path, queryParameters: parameters);
+  static Future<Response<T>> get<T>(String path,
+      {Map<String, dynamic>? parameters, Options? options}) {
+    return DioService.to.dio
+        .get(path, queryParameters: parameters, options: options);
   }
 
   // Dio.post

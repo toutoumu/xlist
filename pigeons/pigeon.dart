@@ -70,6 +70,12 @@ abstract class Android {
 
   void setAdminPwd(String pwd);
 
+  String getAdminPassword();
+
+  String getAdminUsername();
+
+  String getOutboundIPString();
+
   int getAListHttpPort();
 
   bool isRunning();

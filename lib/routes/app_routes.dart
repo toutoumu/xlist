@@ -16,6 +16,7 @@ abstract class Routes {
   static const IMAGE_PREVIEW = _Paths.IMAGE_PREVIEW;
   static const VIDEO_PLAYER = _Paths.VIDEO_PLAYER;
   static const AUDIO_PLAYER = _Paths.AUDIO_PLAYER;
+  static const LOG = _Paths.LOG;// Alist运行日志
 
   // Settings
   static const SETTING = _Paths.SETTING;
@@ -44,6 +45,7 @@ abstract class _Paths {
   static const IMAGE_PREVIEW = '/image/preview';
   static const VIDEO_PLAYER = '/video/player';
   static const AUDIO_PLAYER = '/audio/player';
+  static const LOG = '/log';
 
   // Settings
   static const ALIST = '/alist';

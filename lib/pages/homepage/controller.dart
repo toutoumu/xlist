@@ -8,12 +8,14 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xlist/models/user.dart';
 import 'package:xlist/common/index.dart';
 import 'package:xlist/models/index.dart';
+import 'package:xlist/pages/alist/alist/alist.dart';
 import 'package:xlist/services/index.dart';
 import 'package:xlist/storages/index.dart';
 import 'package:xlist/repositorys/index.dart';
 import 'package:xlist/database/entity/index.dart';
 
 class HomepageController extends GetxController {
+  final aListController = Get.find<AListController>();
   final userInfo = UserModel().obs; // 用户信息
   final objects = <ObjectModel>[].obs; // Object 数据
   final isFirstLoading = true.obs; // 是否是第一次加载
@@ -42,6 +44,13 @@ class HomepageController extends GetxController {
     final server = await DatabaseService.to.database.serverDao
         .findServerById(serverId.value);
     if (server != null) {
+      await Future.delayed(const Duration(seconds: 2));
+      await Repository.get(
+        "${server.url}/ping",
+        options: Options(
+            sendTimeout: const Duration(milliseconds: 1000),
+            receiveTimeout: const Duration(milliseconds: 1000)),
+      );
       await resetUserToken(server);
 
       // 获取目录密码

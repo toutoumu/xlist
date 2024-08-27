@@ -32,6 +32,18 @@ class AndroidBridge(private val context: Context) : com.github.jing332.pigeon.Ge
         AList.setAdminPassword(pwd)
     }
 
+    override fun getAdminPassword(): String {
+        return AList.getAdminPassword()
+    }
+
+    override fun getAdminUsername(): String {
+        return AList.getAdminUsername()
+    }
+
+    override fun getOutboundIPString(): String {
+        return AList.getOutboundIPString()
+    }
+
     override fun getAListHttpPort(): Long {
         return AList.getHttpPort().toLong()
     }

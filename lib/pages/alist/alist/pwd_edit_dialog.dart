@@ -3,8 +3,9 @@ import 'package:get/get.dart';
 
 class PwdEditDialog extends StatefulWidget {
   final ValueChanged<String> onConfirm;
+  final String? password;
 
-  const PwdEditDialog({super.key, required this.onConfirm});
+  const PwdEditDialog({super.key, required this.onConfirm, this.password});
 
   @override
   State<PwdEditDialog> createState() {
@@ -15,6 +16,12 @@ class PwdEditDialog extends StatefulWidget {
 class _PwdEditDialogState extends State<PwdEditDialog>
     with SingleTickerProviderStateMixin {
   final TextEditingController pwdController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    pwdController.text = widget.password ?? "";
+  }
 
   @override
   void dispose() {

@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:xlist/pages/alist/alist/alist.dart';
+import 'package:xlist/pages/alist/settings/settings.dart';
 
 import 'package:xlist/pages/file/index.dart';
 import 'package:xlist/pages/splash/index.dart';
@@ -90,6 +91,13 @@ class AppPages {
       transition: Transition.downToUp,
       middlewares: [AuthMiddleware()],
     ),
+
+    GetPage(
+      name: _Paths.LOG,
+      page: () => AListScreen(),
+      binding: AudioPlayerBinding(),
+    ),
+
     // 设置页面
     GetPage(
       name: _Paths.SETTING,
@@ -98,7 +106,7 @@ class AppPages {
       children: [
         GetPage(
           name: _Paths.ALIST,
-          page: () => AListScreen(),
+          page: () => SettingsScreen(),
           binding: ServerBinding(),
         ),
         GetPage(

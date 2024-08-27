@@ -22,6 +22,19 @@ class AListScreen extends GetView<ServerController> {
   Widget build(BuildContext context) {
     // final ui = Get.put(AListController());
     final ui = Get.find<AListController>();
+    /*Timer? timer;
+    ui.logs.listen((event) {
+      if (timer != null) {
+        timer!.cancel();
+      }
+      timer = Timer(const Duration(milliseconds: 1000), () {
+        ui._scrollController.animateTo(
+          ui._scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      });
+    });*/
 
     return Scaffold(
         appBar: AppBar(
@@ -70,9 +83,11 @@ class AListScreen extends GetView<ServerController> {
                     PopupMenuItem(
                       value: 2,
                       onTap: () {
-                        showDialog(context: context, builder: ((context){
-                          return const AppAboutDialog();
-                        }));
+                        showDialog(
+                            context: context,
+                            builder: ((context) {
+                              return const AppAboutDialog();
+                            }));
                       },
                       child: Text(S.of(context).about),
                     ),
@@ -86,7 +101,7 @@ class AListScreen extends GetView<ServerController> {
               isSwitch: ui.isSwitch.value,
               onSwitchChange: (s) {
                 ui.clearLog();
-                ui.isSwitch.value = s;
+                // ui.isSwitch.value = s;
                 Android().startService();
               }),
         ),
@@ -128,22 +143,16 @@ class AListController extends GetxController {
   void addLog(Log logContent) {
     logs.add(logContent);
     // _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-    if (timer != null) {
-      timer!.cancel();
-    }
-    timer = Timer(const Duration(milliseconds: 1000), () {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    });
   }
 
-  Timer? timer;
-
   @override
-  void onInit() {
+  Future<void> onInit() async {
+    // 如果设置了开机启动，则启动服务
+    if (await AppConfig().isStartAtBootEnabled() && !await Android().isRunning()) {
+      log("启动 AList...");
+      Android().startService();
+    }
+    // 运行状态,日志监听
     Event.setup(MyEventReceiver(
         (isRunning) => isSwitch.value = isRunning, (log) => addLog(log)));
     Android().getAListVersion().then((value) => alistVersion.value = value);

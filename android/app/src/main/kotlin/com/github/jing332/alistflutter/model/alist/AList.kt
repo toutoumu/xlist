@@ -60,7 +60,7 @@ object AList : Event, LogCallback {
         Logger.log(LogLevel.FATAL, type, msg)
     }
 
-    private val mDateFormatter by lazy  { SimpleDateFormat("MM-dd HH:mm:ss", Locale.getDefault())}
+    private val mDateFormatter by lazy { SimpleDateFormat("MM-dd HH:mm:ss", Locale.getDefault()) }
 
     override fun onLog(level: Short, time: Long, log: String) {
         Log.d(TAG, "onLog: $level, $time, $log")
@@ -72,7 +72,7 @@ object AList : Event, LogCallback {
     }
 
     fun isRunning(): Boolean {
-        return Alistlib.isRunning("")
+        return Alistlib.isRunning("http")
     }
 
     fun setAdminPassword(pwd: String) {
@@ -83,6 +83,23 @@ object AList : Event, LogCallback {
         Alistlib.setAdminPassword(pwd)
     }
 
+    fun getAdminPassword(): String {
+        val pwd = Alistlib.getAdminPassword()
+        Log.d(TAG, "getAdminPassword: $pwd")
+        return pwd
+    }
+
+    fun getAdminUsername(): String {
+        val userName = Alistlib.getAdminUsername()
+        Log.d(TAG, "getAdminUsername: $userName")
+        return userName
+    }
+
+    fun getOutboundIPString(): String {
+        val ip = Alistlib.getOutboundIPString()
+        Log.d(TAG, "getOutboundIPString: $ip")
+        return ip
+    }
 
     fun shutdown() {
         Log.d(TAG, "shutdown")
