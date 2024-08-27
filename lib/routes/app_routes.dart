@@ -19,6 +19,7 @@ abstract class Routes {
 
   // Settings
   static const SETTING = _Paths.SETTING;
+  static const SETTING_ALIST = _Paths.SETTING + _Paths.ALIST;
   static const SETTING_SERVER = _Paths.SETTING + _Paths.SERVER;
   static const SETTING_DOWNLOAD = _Paths.SETTING + _Paths.DOWNLOAD;
   static const SETTING_ABOUT = _Paths.SETTING + _Paths.ABOUT;
@@ -45,6 +46,7 @@ abstract class _Paths {
   static const AUDIO_PLAYER = '/audio/player';
 
   // Settings
+  static const ALIST = '/alist';
   static const SETTING = '/setting';
   static const SERVER = '/server';
   static const DOWNLOAD = '/download';

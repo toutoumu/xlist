@@ -11,3 +11,7 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+
+# 文件太大无法提交
+app/libs/*.aar
+app/libs/*.jar

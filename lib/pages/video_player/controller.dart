@@ -7,12 +7,12 @@ import 'package:path/path.dart' as p;
 import 'package:charset/charset.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wakelock/wakelock.dart';
 import 'package:fijkplayer/fijkplayer.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:subtitle_wrapper_package/subtitle_wrapper_package.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'package:xlist/gen/index.dart';
 import 'package:xlist/helper/index.dart';
@@ -161,8 +161,8 @@ class VideoPlayerController extends SuperController {
     }
 
     // 屏幕常亮切换
-    if (value.state == FijkState.started) Wakelock.enable();
-    if (value.state == FijkState.paused) Wakelock.disable();
+    if (value.state == FijkState.started) WakelockPlus.enable();
+    if (value.state == FijkState.paused) WakelockPlus.disable();
 
     // 播放预加载完成
     if (value.state == FijkState.prepared) {
@@ -580,6 +580,6 @@ class VideoPlayerController extends SuperController {
     player.release();
 
     DownloadService.to.unbindBackgroundIsolate();
-    Wakelock.disable();
+    WakelockPlus.disable();
   }
 }

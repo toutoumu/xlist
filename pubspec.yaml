@@ -4,17 +4,22 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.19.4 <4.0.0'
+  # sdk: '>=2.19.4 <4.0.0'
+  sdk: '>=3.2.4 <4.0.0'
   flutter: '>=1.12.0'
 
 dependencies:
   flutter:
+    sdk: flutter
+  flutter_localizations:
     sdk: flutter
   cupertino_icons: ^1.0.2
 
   fijkplayer:
     path: packages/fijkplayer
 
+
+  win32: '^5.0.2'
   get: ^4.6.5
   get_storage: ^2.0.3
   dio: ^5.0.1
@@ -25,11 +30,12 @@ dependencies:
   encrypt: ^5.0.3
   keframe: ^3.0.0
   charset: ^2.0.1
-  wakelock: ^0.6.2
+#  wakelock: 0.6.2
+  wakelock_plus: ^1.2.8
   audio_wave: ^0.1.5
-  share_plus: ^6.3.4
+  share_plus: ^10.0.2
   photo_view: ^0.15.0
-  file_picker: ^5.2.10
+  file_picker: ^8.1.2
   url_launcher: ^6.1.11
   image_picker: ^1.1.2
   easy_refresh: ^3.3.1+2
@@ -42,9 +48,9 @@ dependencies:
   adaptive_dialog: ^2.1.0
   dismissible_page: ^1.0.1
   pull_down_button: ^0.9.1
-  device_info_plus: ^8.2.2
+  device_info_plus: ^10.1.2
   flex_color_scheme: ^7.3.1
-  package_info_plus: ^3.0.3
+  package_info_plus: ^8.0.2
   permission_handler: ^11.3.1
   modal_bottom_sheet: ^3.0.0-pre
   image_gallery_saver: ^2.0.3
@@ -52,7 +58,7 @@ dependencies:
   cached_network_image: ^3.2.3
   subtitle_wrapper_package: ^2.1.1
   infinite_scroll_pagination: ^4.0.0
-  syncfusion_flutter_pdfviewer: ^21.2.4
+  syncfusion_flutter_pdfviewer: ^20.4.54
   flutter_svg: ^2.0.5
   flutter_phoenix: ^1.1.0
   flutter_slidable: ^3.0.0
@@ -62,6 +68,19 @@ dependencies:
   flutter_inappwebview: ^6.0.0
   flutter_native_splash: ^2.2.19
   flutter_keyboard_visibility: ^6.0.0
+
+  # cupertino_icons: ^1.0.2
+  # get: ^4.6.6
+  pigeon: ^16.0.0
+  # flutter_inappwebview: ^6.0.0
+  android_intent_plus: ^4.0.3
+  # flutter_svg: ^2.0.9
+  # permission_handler: ^11.1.0
+  lazy_load_indexed_stack: ^1.1.0
+  animations: ^2.0.11
+  # file_picker: ^6.1.1
+  fade_indexed_stack: ^0.2.2
+  # path_provider: ^2.1.4
 
 dev_dependencies:
   flutter_test:
@@ -105,3 +124,5 @@ flutter:
     - assets/
     - assets/common/
     - assets/images/
+flutter_intl:
+  enabled: true

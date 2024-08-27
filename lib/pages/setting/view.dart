@@ -132,6 +132,11 @@ class SettingPage extends GetView<SettingController> {
                   ),
                   children: [
                     _buildListTile(
+                      title: 'alist',
+                      icon: Icons.star_rounded,
+                      onTap: () => Get.toNamed(Routes.SETTING_ALIST),
+                    ),
+                    _buildListTile(
                       title: 'server'.tr,
                       icon: Icons.cloud,
                       additionalInfo: controller.serverInfo.value.username,
