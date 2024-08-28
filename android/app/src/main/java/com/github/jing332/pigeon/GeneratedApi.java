@@ -861,6 +861,66 @@ public class GeneratedApi {
             } 
           });
     }
+    public void onProcessExit(@NonNull Long var1Arg, @NonNull VoidResult result) {
+      final String channelName = "dev.flutter.pigeon.xlist.Event.onProcessExit";
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, channelName, getCodec());
+      channel.send(
+          new ArrayList<Object>(Collections.singletonList(var1Arg)),
+          channelReply -> {
+            if (channelReply instanceof List) {
+              List<Object> listReply = (List<Object>) channelReply;
+              if (listReply.size() > 1) {
+                result.error(new FlutterError((String) listReply.get(0), (String) listReply.get(1), (String) listReply.get(2)));
+              } else {
+                result.success();
+              }
+            }  else {
+              result.error(createConnectionError(channelName));
+            } 
+          });
+    }
+    public void onShutdown(@NonNull String var1Arg, @NonNull VoidResult result) {
+      final String channelName = "dev.flutter.pigeon.xlist.Event.onShutdown";
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, channelName, getCodec());
+      channel.send(
+          new ArrayList<Object>(Collections.singletonList(var1Arg)),
+          channelReply -> {
+            if (channelReply instanceof List) {
+              List<Object> listReply = (List<Object>) channelReply;
+              if (listReply.size() > 1) {
+                result.error(new FlutterError((String) listReply.get(0), (String) listReply.get(1), (String) listReply.get(2)));
+              } else {
+                result.success();
+              }
+            }  else {
+              result.error(createConnectionError(channelName));
+            } 
+          });
+    }
+    public void onStartError(@NonNull String var1Arg, @NonNull String var2Arg, @NonNull VoidResult result) {
+      final String channelName = "dev.flutter.pigeon.xlist.Event.onStartError";
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, channelName, getCodec());
+      channel.send(
+          new ArrayList<Object>(Arrays.asList(var1Arg, var2Arg)),
+          channelReply -> {
+            if (channelReply instanceof List) {
+              List<Object> listReply = (List<Object>) channelReply;
+              if (listReply.size() > 1) {
+                result.error(new FlutterError((String) listReply.get(0), (String) listReply.get(1), (String) listReply.get(2)));
+              } else {
+                result.success();
+              }
+            }  else {
+              result.error(createConnectionError(channelName));
+            } 
+          });
+    }
     public void onServerLog(@NonNull Long levelArg, @NonNull String timeArg, @NonNull String logArg, @NonNull VoidResult result) {
       final String channelName = "dev.flutter.pigeon.xlist.Event.onServerLog";
       BasicMessageChannel<Object> channel =

@@ -4,7 +4,7 @@ import com.github.jing332.alistflutter.config.AppConfig
 import com.github.jing332.pigeon.GeneratedApi
 
 
-object AppConfigBridge : com.github.jing332.pigeon.GeneratedApi.AppConfig {
+object AppConfigBridge : GeneratedApi.AppConfig {
     override fun isWakeLockEnabled() = AppConfig.isWakeLockEnabled
 
     override fun isStartAtBootEnabled() = AppConfig.isStartAtBootEnabled

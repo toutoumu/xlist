@@ -13,7 +13,7 @@ import com.github.jing332.pigeon.GeneratedApi
 import io.xlist.BuildConfig
 import io.xlist.R
 
-class AndroidBridge(private val context: Context) : com.github.jing332.pigeon.GeneratedApi.Android {
+class AndroidBridge(private val context: Context) : GeneratedApi.Android {
     override fun addShortcut() {
         MyTools.addShortcut(
             context,
@@ -48,6 +48,7 @@ class AndroidBridge(private val context: Context) : com.github.jing332.pigeon.Ge
         return AList.getHttpPort().toLong()
     }
 
+    //override fun isRunning() = AList.isRunning()
     override fun isRunning() = AListService.isRunning
 
 

@@ -2,9 +2,11 @@ import 'dart:developer';
 import 'dart:ffi';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:xlist/common/utils.dart';
 import 'package:xlist/generated/l10n.dart';
 import 'package:xlist/generated_api.dart';
 import 'package:xlist/pages/alist/alist/alist.dart';
@@ -13,7 +15,7 @@ import '../contant/native_bridge.dart';
 import 'preference_widgets.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  const SettingsScreen({super.key});
 
   @override
   State<SettingsScreen> createState() {
@@ -45,12 +47,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final controller = Get.put(_SettingsController());
     final aListController = Get.find<AListController>();
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          title: const Text("AList"),
+    return CupertinoPageScaffold(
+        navigationBar: CupertinoNavigationBar(
+          backgroundColor: Get.theme.scaffoldBackgroundColor,
+          border: Border.all(width: 0, color: Colors.transparent),
+          leading: CommonUtils.backButton,
+          middle: const Text(
+            "AList",
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
-        body: Obx(
+        child: Obx(
           () => ListView(
             children: [
               // SizedBox(height: MediaQuery.of(context).padding.top),
@@ -172,7 +180,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: S.of(context).autoStartWebPage,
                 subtitle: S.of(context).autoStartWebPageDesc,
                 icon: const Icon(Icons.open_in_browser),
-                value: aListController.isSwitch.value,
+                value: aListController.isRunning.value,
                 onChanged: (value) {
                   NativeBridge.android.startService();
                 },

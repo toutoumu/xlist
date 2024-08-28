@@ -764,6 +764,12 @@ abstract class Event {
 
   void onServiceStatusChanged(bool isRunning);
 
+  void onProcessExit(int var1);
+
+  void onShutdown(String var1);
+
+  void onStartError(String var1, String var2);
+
   void onServerLog(int level, String time, String log);
 
   static void setup(Event? api, {BinaryMessenger? binaryMessenger}) {
@@ -783,6 +789,84 @@ abstract class Event {
               'Argument for dev.flutter.pigeon.xlist.Event.onServiceStatusChanged was null, expected non-null bool.');
           try {
             api.onServiceStatusChanged(arg_isRunning!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> __pigeon_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.xlist.Event.onProcessExit', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        __pigeon_channel.setMessageHandler(null);
+      } else {
+        __pigeon_channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.xlist.Event.onProcessExit was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_var1 = (args[0] as int?);
+          assert(arg_var1 != null,
+              'Argument for dev.flutter.pigeon.xlist.Event.onProcessExit was null, expected non-null int.');
+          try {
+            api.onProcessExit(arg_var1!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> __pigeon_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.xlist.Event.onShutdown', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        __pigeon_channel.setMessageHandler(null);
+      } else {
+        __pigeon_channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.xlist.Event.onShutdown was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final String? arg_var1 = (args[0] as String?);
+          assert(arg_var1 != null,
+              'Argument for dev.flutter.pigeon.xlist.Event.onShutdown was null, expected non-null String.');
+          try {
+            api.onShutdown(arg_var1!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> __pigeon_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.xlist.Event.onStartError', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        __pigeon_channel.setMessageHandler(null);
+      } else {
+        __pigeon_channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.xlist.Event.onStartError was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final String? arg_var1 = (args[0] as String?);
+          assert(arg_var1 != null,
+              'Argument for dev.flutter.pigeon.xlist.Event.onStartError was null, expected non-null String.');
+          final String? arg_var2 = (args[1] as String?);
+          assert(arg_var2 != null,
+              'Argument for dev.flutter.pigeon.xlist.Event.onStartError was null, expected non-null String.');
+          try {
+            api.onStartError(arg_var1!, arg_var2!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);

@@ -87,6 +87,12 @@ abstract class Android {
 abstract class Event {
   void onServiceStatusChanged(bool isRunning);
 
+  void onProcessExit(int var1);
+
+  void onShutdown(String var1);
+
+  void onStartError(String var1, String var2);
+
   void onServerLog(
     int level,
     String time,

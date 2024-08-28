@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:xlist/generated/l10n.dart';
@@ -39,7 +37,7 @@ class AListScreen extends GetView<ServerController> {
     return Scaffold(
         appBar: AppBar(
             backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-            title: Obx(() => Text("AList - ${ui.alistVersion.value}")),
+            title: Obx(() => Text("AList - ${ui.aListVersion.value}")),
             actions: [
               IconButton(
                 tooltip: S.of(context).desktopShortcut,
@@ -98,8 +96,8 @@ class AListScreen extends GetView<ServerController> {
             ]),
         floatingActionButton: Obx(
           () => SwitchFloatingButton(
-              isSwitch: ui.isSwitch.value,
-              onSwitchChange: (s) {
+              isSwitch: ui.isRunning.value,
+              onSwitchChange: (s) async {
                 ui.clearLog();
                 // ui.isSwitch.value = s;
                 Android().startService();
@@ -115,8 +113,17 @@ class AListScreen extends GetView<ServerController> {
 class MyEventReceiver extends Event {
   Function(Log log) logCb;
   Function(bool isRunning) statusCb;
+  Function() processExitCb;
+  Function() shutdownCb;
+  Function() startErrorCb;
 
-  MyEventReceiver(this.statusCb, this.logCb);
+  MyEventReceiver({
+    required this.statusCb,
+    required this.logCb,
+    required this.processExitCb,
+    required this.shutdownCb,
+    required this.startErrorCb,
+  });
 
   @override
   void onServiceStatusChanged(bool isRunning) {
@@ -127,12 +134,27 @@ class MyEventReceiver extends Event {
   void onServerLog(int level, String time, String log) {
     logCb(Log(level, time, log));
   }
+
+  @override
+  void onProcessExit(int var1) {
+    processExitCb();
+  }
+
+  @override
+  void onShutdown(String var1) {
+    shutdownCb();
+  }
+
+  @override
+  void onStartError(String var1, String var2) {
+    startErrorCb();
+  }
 }
 
 class AListController extends GetxController {
   final ScrollController _scrollController = ScrollController();
-  var isSwitch = false.obs;
-  var alistVersion = "".obs;
+  var isRunning = false.obs;
+  var aListVersion = "".obs;
 
   var logs = <Log>[].obs;
 
@@ -147,17 +169,40 @@ class AListController extends GetxController {
 
   @override
   Future<void> onInit() async {
+    // 运行状态,日志监听
+    Event.setup(
+      // 状态监听
+      MyEventReceiver(
+        // statusCb: (isRunning) => isSwitch.value = isRunning,
+        logCb: (log) => addLog(log),
+        statusCb: (bool running) async {
+          log("statusCb");
+          isRunning.value = await Android().isRunning();
+        },
+        processExitCb: () async {
+          log("processExitCb");
+          isRunning.value = await Android().isRunning();
+        },
+        shutdownCb: () async {
+          log("shutdownCb");
+          isRunning.value = await Android().isRunning();
+        },
+        startErrorCb: () async {
+          log("startErrorCb");
+          isRunning.value = await Android().isRunning();
+        },
+      ),
+    );
+    // 版本号
+    Android().getAListVersion().then((value) => aListVersion.value = value);
+    Android().isRunning().then((value) => isRunning.value = value);
+
     // 如果设置了开机启动，则启动服务
-    if (await AppConfig().isStartAtBootEnabled() && !await Android().isRunning()) {
+    if (await AppConfig().isStartAtBootEnabled() &&
+        !await Android().isRunning()) {
       log("启动 AList...");
       Android().startService();
     }
-    // 运行状态,日志监听
-    Event.setup(MyEventReceiver(
-        (isRunning) => isSwitch.value = isRunning, (log) => addLog(log)));
-    Android().getAListVersion().then((value) => alistVersion.value = value);
-    Android().isRunning().then((value) => isSwitch.value = value);
-
     super.onInit();
   }
 }

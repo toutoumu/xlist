@@ -1,6 +1,7 @@
 package com.github.jing332.alistflutter
 
 import alistlib.Alistlib
+import alistlib.Event
 import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
@@ -14,18 +15,28 @@ import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
+import android.util.Log
+import androidx.core.app.ServiceCompat.startForeground
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.github.jing332.alistflutter.AListService.Companion.ACTION_COPY_ADDRESS
+import com.github.jing332.alistflutter.AListService.Companion.FOREGROUND_ID
+import com.github.jing332.alistflutter.AListService.Companion.NOTIFICATION_CHAN_ID
 import com.github.jing332.alistflutter.config.AppConfig
+import com.github.jing332.alistflutter.constant.LogLevel
+import com.github.jing332.alistflutter.constant.LogLevel.Companion
 import com.github.jing332.alistflutter.model.alist.AList
+import com.github.jing332.alistflutter.model.alist.Logger
 import com.github.jing332.alistflutter.utils.AndroidUtils.registerReceiverCompat
 import com.github.jing332.alistflutter.utils.ClipboardUtils
 import com.github.jing332.alistflutter.utils.ToastUtils.toast
+import com.github.jing332.pigeon.GeneratedApi
 import io.xlist.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import splitties.systemservices.powerManager
 
-class AListService : Service(), AList.Listener {
+class AListService : Service() {
     companion object {
         const val TAG = "AlistService"
         const val ACTION_SHUTDOWN =
@@ -37,6 +48,18 @@ class AListService : Service(), AList.Listener {
         const val ACTION_STATUS_CHANGED =
             "com.github.jing332.alistandroid.service.AlistService.ACTION_STATUS_CHANGED"
 
+        // 广播参数
+        const val EVENT_TYPE = "event_type"
+        const val EVENT_TYPE_STARTUP = "startup"
+        const val EVENT_TYPE_SHUTDOWN = "shutdown"
+        const val EVENT_TYPE_START_ERROR = "start_error"
+        const val EVENT_TYPE_PROCESS_EXIT = "process_exit"
+
+        // 广播数据参数
+        const val EVENT_INT_PARAM = "event_int_param"
+        const val EVENT_STRING_PARAM1 = "event_string_param1"
+        const val EVENT_STRING_PARAM2 = "event_string_param2"
+
         const val NOTIFICATION_CHAN_ID = "alist_server"
         const val FOREGROUND_ID = 5224
 
@@ -45,22 +68,24 @@ class AListService : Service(), AList.Listener {
 
     private val mScope = CoroutineScope(Job())
     private val mNotificationReceiver = NotificationActionReceiver()
-    private val mReceiver = MyReceiver()
     private var mWakeLock: PowerManager.WakeLock? = null
     private var mLocalAddress: String = ""
 
     override fun onBind(p0: Intent?): IBinder? = null
 
     @Suppress("DEPRECATION")
-    private fun notifyStatusChanged() {
+    private fun notifyStatusChanged(event: String) {
         LocalBroadcastManager.getInstance(this)
-            .sendBroadcast(Intent(ACTION_STATUS_CHANGED))
+            .sendBroadcast(Intent(ACTION_STATUS_CHANGED).apply {
+                putExtra(EVENT_TYPE, event)
+            })
 
         if (!isRunning) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 stopForeground(STOP_FOREGROUND_REMOVE)
-            } else
+            } else {
                 stopForeground(true)
+            }
 
             stopSelf()
         }
@@ -70,28 +95,17 @@ class AListService : Service(), AList.Listener {
     override fun onCreate() {
         super.onCreate()
 
+        Log.d(TAG, "onCreate: $isRunning")
+
         initOrUpdateNotification()
 
         if (AppConfig.isWakeLockEnabled) {
-            mWakeLock = powerManager.newWakeLock(
-                PowerManager.PARTIAL_WAKE_LOCK,
-                "alist::service"
-            )
+            mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "alist::service")
             mWakeLock?.acquire()
         }
 
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(
-                mReceiver,
-                IntentFilter(ACTION_STATUS_CHANGED)
-            )
-        registerReceiverCompat(
-            mNotificationReceiver,
-            ACTION_SHUTDOWN,
-            ACTION_COPY_ADDRESS
-        )
-
-        AList.addListener(this)
+        // 通知栏通知, 按钮点击事件
+        registerReceiverCompat(mNotificationReceiver, ACTION_SHUTDOWN, ACTION_COPY_ADDRESS)
     }
 
 
@@ -99,23 +113,16 @@ class AListService : Service(), AList.Listener {
     override fun onDestroy() {
         super.onDestroy()
 
+        Log.d(TAG, "onDestroy: $isRunning")
+
         mWakeLock?.release()
         mWakeLock = null
 
+        // 移除监听
         stopForeground(true)
-
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver)
         unregisterReceiver(mNotificationReceiver)
-
-        AList.removeListener(this)
     }
 
-    override fun onShutdown(type: String) {
-        if (!AList.isRunning()) {
-            isRunning = false
-            notifyStatusChanged()
-        }
-    }
 
     private fun startOrShutdown() {
         if (isRunning) {
@@ -123,26 +130,37 @@ class AListService : Service(), AList.Listener {
         } else {
             toast(getString(R.string.starting))
             isRunning = true
+            AList.init(object : Event {
+                override fun onShutdown(p0: String) {
+                    Log.d(TAG, "onShutdown: $p0")
+                    // if (!AList.isRunning()) {
+                    isRunning = false
+                    notifyStatusChanged(EVENT_TYPE_SHUTDOWN)
+                    // }
+                }
+
+                override fun onStartError(type: String, msg: String) {
+                    isRunning = false
+                    Log.e(TAG, "onStartError: $type, $msg")
+                    Logger.log(LogLevel.FATAL, type, msg)
+                    notifyStatusChanged(EVENT_TYPE_START_ERROR)
+                }
+
+                override fun onProcessExit(code: Long) {
+                    isRunning = false
+                    Log.e(TAG, "onProcessExit")
+                    // Logger.log(LogLevel.FATAL, type, "onProcessExit")
+                    notifyStatusChanged(EVENT_TYPE_PROCESS_EXIT)
+                }
+            })
             AList.startup()
-            notifyStatusChanged()
+            notifyStatusChanged(EVENT_TYPE_STARTUP)
         }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startOrShutdown()
-
         return super.onStartCommand(intent, flags, startId)
-    }
-
-    inner class MyReceiver : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent) {
-            when (intent.action) {
-                ACTION_STATUS_CHANGED -> {
-
-                }
-            }
-
-        }
     }
 
     private fun localAddress(): String = Alistlib.getOutboundIPString()
@@ -181,7 +199,7 @@ class AListService : Service(), AList.Listener {
                 pendingIntentFlags
             )
 
-//        val color = com.github.jing332.alistandroid.ui.theme.seed.androidColor
+        // val color = com.github.jing332.alistandroid.ui.theme.seed.androidColor
         val smallIconRes: Int
         val builder = Notification.Builder(applicationContext)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {/*Android 8.0+ 要求必须设置通知信道*/
@@ -190,7 +208,7 @@ class AListService : Service(), AList.Listener {
                 getString(R.string.alist_server),
                 NotificationManager.IMPORTANCE_NONE
             )
-//            chan.lightColor = color
+            // chan.lightColor = color
             chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
             val service = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             service.createNotificationChannel(chan)
@@ -205,7 +223,7 @@ class AListService : Service(), AList.Listener {
             smallIconRes = R.mipmap.ic_launcher
         }
         val notification = builder
-//            .setColor(color)
+            // .setColor(color)
             .setContentTitle(getString(R.string.alist_server_running))
             .setContentText(localAddress())
             .setSmallIcon(smallIconRes)

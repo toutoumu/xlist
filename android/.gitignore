@@ -13,5 +13,5 @@ key.properties
 **/*.jks
 
 # 文件太大无法提交
-app/libs/*.aar
-app/libs/*.jar
+#app/libs/*.aar
+#app/libs/*.jar

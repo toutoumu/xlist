@@ -13,8 +13,9 @@ import io.xlist.R
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlin.math.log
 
-object AList : Event, LogCallback {
+object AList {
     const val TAG = "AList"
 
     val context = app
@@ -26,60 +27,35 @@ object AList : Event, LogCallback {
         get() = "$dataDir${File.separator}config.json"
 
 
-    fun init() {
+    fun init(event: Event) {
         runCatching {
+            Log.e(TAG, "init")
             Alistlib.setConfigData(dataDir)
             Alistlib.setConfigLogStd(true)
-            Alistlib.init(this, this)
+            Alistlib.init(event, object : LogCallback {
+                override fun onLog(level: Short, time: Long, log: String) {
+                    Log.d(TAG, "onLog: $level, $time, $log")
+                    Logger.log(level.toInt(), mDateFormatter.format(time), log)
+                }
+            })
         }.onFailure {
             Log.e(TAG, "init:", it)
         }
     }
 
-    interface Listener {
-        fun onShutdown(type: String)
-    }
-
-    private val mListeners = mutableListOf<Listener>()
-
-    fun addListener(listener: Listener) {
-        mListeners.add(listener)
-    }
-
-    fun removeListener(listener: Listener) {
-        mListeners.remove(listener)
-    }
-
-    override fun onShutdown(p0: String) {
-        Log.d(TAG, "onShutdown: $p0")
-        mListeners.forEach { it.onShutdown(p0) }
-    }
-
-    override fun onStartError(type: String, msg: String) {
-        Log.e(TAG, "onStartError: $type, $msg")
-        Logger.log(LogLevel.FATAL, type, msg)
-    }
-
     private val mDateFormatter by lazy { SimpleDateFormat("MM-dd HH:mm:ss", Locale.getDefault()) }
 
-    override fun onLog(level: Short, time: Long, log: String) {
-        Log.d(TAG, "onLog: $level, $time, $log")
-        Logger.log(level.toInt(), mDateFormatter.format(time), log)
-    }
-
-    override fun onProcessExit(code: Long) {
-
-    }
 
     fun isRunning(): Boolean {
-        return Alistlib.isRunning("http")
+        val isRunning = Alistlib.isRunning("http")
+        Log.d(TAG, "isRunning:  $isRunning")
+        return isRunning
     }
 
     fun setAdminPassword(pwd: String) {
-        if (!isRunning()) init()
-
-        Log.d(TAG, "setAdminPassword: $dataDir")
-        Alistlib.setConfigData(dataDir)
+        // if (!isRunning()) init()
+        Log.d(TAG, "setAdminPassword: $pwd")
+        // Alistlib.setConfigData(dataDir)
         Alistlib.setAdminPassword(pwd)
     }
 
@@ -113,7 +89,7 @@ object AList : Event, LogCallback {
     @SuppressLint("SdCardPath")
     fun startup() {
         Log.d(TAG, "startup: $dataDir")
-        init()
+        // init()
         Alistlib.start()
     }
 
