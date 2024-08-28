@@ -20,6 +20,9 @@
 		182328532C7E1D4D00074D5B /* Alistlib.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 182328452C7E1D4D00074D5B /* Alistlib.xcframework */; };
 		182328542C7E1D4D00074D5B /* AListService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182328462C7E1D4D00074D5B /* AListService.swift */; };
 		182328552C7E1D4D00074D5B /* GeneratedApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182328472C7E1D4D00074D5B /* GeneratedApi.swift */; };
+		182328582C7EE0D600074D5B /* libresolv.9.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 182328562C7ED8D200074D5B /* libresolv.9.tbd */; };
+		182328592C7EE0D600074D5B /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 182328572C7ED8D200074D5B /* libresolv.tbd */; };
+		1823285B2C7EE70900074D5B /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1823285A2C7EE70900074D5B /* IOKit.framework */; };
 		2738980BDBE6227EC5CD51A3 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5500DC295D4491F02198B5C2 /* Pods_RunnerTests.framework */; };
 		331C808B294A63AB00263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C807B294A618700263BE5 /* RunnerTests.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
@@ -68,6 +71,9 @@
 		182328452C7E1D4D00074D5B /* Alistlib.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = Alistlib.xcframework; sourceTree = "<group>"; };
 		182328462C7E1D4D00074D5B /* AListService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AListService.swift; sourceTree = "<group>"; };
 		182328472C7E1D4D00074D5B /* GeneratedApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneratedApi.swift; sourceTree = "<group>"; };
+		182328562C7ED8D200074D5B /* libresolv.9.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.9.tbd; path = usr/lib/libresolv.9.tbd; sourceTree = SDKROOT; };
+		182328572C7ED8D200074D5B /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
+		1823285A2C7EE70900074D5B /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		331C807B294A618700263BE5 /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
 		331C8081294A63A400263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
@@ -106,7 +112,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				746CF3AECFF2498354659B00 /* Pods_Runner.framework in Frameworks */,
+				182328582C7EE0D600074D5B /* libresolv.9.tbd in Frameworks */,
 				182328532C7E1D4D00074D5B /* Alistlib.xcframework in Frameworks */,
+				1823285B2C7EE70900074D5B /* IOKit.framework in Frameworks */,
+				182328592C7EE0D600074D5B /* libresolv.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,6 +248,9 @@
 		BBD6A7E02B82FC3B00625EEC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1823285A2C7EE70900074D5B /* IOKit.framework */,
+				182328562C7ED8D200074D5B /* libresolv.9.tbd */,
+				182328572C7ED8D200074D5B /* libresolv.tbd */,
 				BBD6A7E12B82FC3B00625EEC /* libsqlite3.tbd */,
 				6404FF336BE54962F867627C /* Pods_Runner.framework */,
 				5500DC295D4491F02198B5C2 /* Pods_RunnerTests.framework */,

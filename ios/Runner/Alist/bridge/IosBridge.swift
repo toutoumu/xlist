@@ -13,19 +13,7 @@ import Combine
  * 提供给 Flutter 调用的接口
  */
 class IosBridge: Android {
-    func getAdminPassword() throws -> String {
-        return ""
-    }
     
-    func getAdminUsername() throws -> String {
-        return ""
-    }
-    
-    func getOutboundIPString() throws -> String {
-        return ""
-    }
-    
-
     var event: Event
 
     init(event: Event) {
@@ -73,6 +61,33 @@ class IosBridge: Android {
 
     func setAdminPwd(pwd: String) throws {
         AList.instance.setAdminPassword(pwd: pwd)
+    }
+    
+    func getAdminPassword() throws -> String {
+        do {
+            let result =  try AList.instance.getAdminPassword()
+            return result
+        } catch {
+            return ""
+        }
+    }
+    
+    func getAdminUsername() throws -> String {
+        do {
+            let result =  try AList.instance.getAdminUsername()
+            return result
+        } catch {
+            return ""
+        }
+    }
+    
+    func getOutboundIPString() throws -> String {
+        do {
+            let result =  try AList.instance.getOutboundIPString()
+            return result
+        } catch {
+            return ""
+        }
     }
 
     func getAListHttpPort() throws -> Int64 {
