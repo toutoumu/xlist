@@ -8,6 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
+		1823284A2C7E1D4D00074D5B /* HCKeepBGRunManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182328362C7E1D4D00074D5B /* HCKeepBGRunManager.swift */; };
+		1823284B2C7E1D4D00074D5B /* jm.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 182328372C7E1D4D00074D5B /* jm.mp3 */; };
+		1823284C2C7E1D4D00074D5B /* AppConfigBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182328392C7E1D4D00074D5B /* AppConfigBridge.swift */; };
+		1823284D2C7E1D4D00074D5B /* CommonBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1823283A2C7E1D4D00074D5B /* CommonBridge.swift */; };
+		1823284E2C7E1D4D00074D5B /* IosBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1823283B2C7E1D4D00074D5B /* IosBridge.swift */; };
+		1823284F2C7E1D4D00074D5B /* LogLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1823283D2C7E1D4D00074D5B /* LogLevel.swift */; };
+		182328502C7E1D4D00074D5B /* AList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1823283F2C7E1D4D00074D5B /* AList.swift */; };
+		182328512C7E1D4D00074D5B /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182328402C7E1D4D00074D5B /* Logger.swift */; };
+		182328522C7E1D4D00074D5B /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182328432C7E1D4D00074D5B /* NotificationManager.swift */; };
+		182328532C7E1D4D00074D5B /* Alistlib.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 182328452C7E1D4D00074D5B /* Alistlib.xcframework */; };
+		182328542C7E1D4D00074D5B /* AListService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182328462C7E1D4D00074D5B /* AListService.swift */; };
+		182328552C7E1D4D00074D5B /* GeneratedApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182328472C7E1D4D00074D5B /* GeneratedApi.swift */; };
 		2738980BDBE6227EC5CD51A3 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5500DC295D4491F02198B5C2 /* Pods_RunnerTests.framework */; };
 		331C808B294A63AB00263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C807B294A618700263BE5 /* RunnerTests.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
@@ -44,6 +56,18 @@
 /* Begin PBXFileReference section */
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
+		182328362C7E1D4D00074D5B /* HCKeepBGRunManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HCKeepBGRunManager.swift; sourceTree = "<group>"; };
+		182328372C7E1D4D00074D5B /* jm.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = jm.mp3; sourceTree = "<group>"; };
+		182328392C7E1D4D00074D5B /* AppConfigBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppConfigBridge.swift; sourceTree = "<group>"; };
+		1823283A2C7E1D4D00074D5B /* CommonBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonBridge.swift; sourceTree = "<group>"; };
+		1823283B2C7E1D4D00074D5B /* IosBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IosBridge.swift; sourceTree = "<group>"; };
+		1823283D2C7E1D4D00074D5B /* LogLevel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogLevel.swift; sourceTree = "<group>"; };
+		1823283F2C7E1D4D00074D5B /* AList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AList.swift; sourceTree = "<group>"; };
+		182328402C7E1D4D00074D5B /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		182328432C7E1D4D00074D5B /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		182328452C7E1D4D00074D5B /* Alistlib.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = Alistlib.xcframework; sourceTree = "<group>"; };
+		182328462C7E1D4D00074D5B /* AListService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AListService.swift; sourceTree = "<group>"; };
+		182328472C7E1D4D00074D5B /* GeneratedApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneratedApi.swift; sourceTree = "<group>"; };
 		331C807B294A618700263BE5 /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
 		331C8081294A63A400263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
@@ -82,12 +106,80 @@
 			buildActionMask = 2147483647;
 			files = (
 				746CF3AECFF2498354659B00 /* Pods_Runner.framework in Frameworks */,
+				182328532C7E1D4D00074D5B /* Alistlib.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		182328382C7E1D4D00074D5B /* BGRunManager */ = {
+			isa = PBXGroup;
+			children = (
+				182328362C7E1D4D00074D5B /* HCKeepBGRunManager.swift */,
+				182328372C7E1D4D00074D5B /* jm.mp3 */,
+			);
+			path = BGRunManager;
+			sourceTree = "<group>";
+		};
+		1823283C2C7E1D4D00074D5B /* bridge */ = {
+			isa = PBXGroup;
+			children = (
+				182328392C7E1D4D00074D5B /* AppConfigBridge.swift */,
+				1823283A2C7E1D4D00074D5B /* CommonBridge.swift */,
+				1823283B2C7E1D4D00074D5B /* IosBridge.swift */,
+			);
+			path = bridge;
+			sourceTree = "<group>";
+		};
+		1823283E2C7E1D4D00074D5B /* constant */ = {
+			isa = PBXGroup;
+			children = (
+				1823283D2C7E1D4D00074D5B /* LogLevel.swift */,
+			);
+			path = constant;
+			sourceTree = "<group>";
+		};
+		182328412C7E1D4D00074D5B /* alist */ = {
+			isa = PBXGroup;
+			children = (
+				1823283F2C7E1D4D00074D5B /* AList.swift */,
+				182328402C7E1D4D00074D5B /* Logger.swift */,
+			);
+			path = alist;
+			sourceTree = "<group>";
+		};
+		182328422C7E1D4D00074D5B /* model */ = {
+			isa = PBXGroup;
+			children = (
+				182328412C7E1D4D00074D5B /* alist */,
+			);
+			path = model;
+			sourceTree = "<group>";
+		};
+		182328442C7E1D4D00074D5B /* NotificationManager */ = {
+			isa = PBXGroup;
+			children = (
+				182328432C7E1D4D00074D5B /* NotificationManager.swift */,
+			);
+			path = NotificationManager;
+			sourceTree = "<group>";
+		};
+		182328482C7E1D4D00074D5B /* Alist */ = {
+			isa = PBXGroup;
+			children = (
+				182328382C7E1D4D00074D5B /* BGRunManager */,
+				1823283C2C7E1D4D00074D5B /* bridge */,
+				1823283E2C7E1D4D00074D5B /* constant */,
+				182328422C7E1D4D00074D5B /* model */,
+				182328442C7E1D4D00074D5B /* NotificationManager */,
+				182328452C7E1D4D00074D5B /* Alistlib.xcframework */,
+				182328462C7E1D4D00074D5B /* AListService.swift */,
+				182328472C7E1D4D00074D5B /* GeneratedApi.swift */,
+			);
+			path = Alist;
+			sourceTree = "<group>";
+		};
 		331C8082294A63A400263BE5 /* RunnerTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -131,6 +223,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				182328482C7E1D4D00074D5B /* Alist */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
@@ -200,6 +293,7 @@
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				0029B2EFE1ACFB84BDACD088 /* [CP] Embed Pods Frameworks */,
+				D7ED09C9751EA6A0695CEA45 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -217,7 +311,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 1510;
 				ORGANIZATIONNAME = "";
 				TargetAttributes = {
 					331C8080294A63A400263BE5 = {
@@ -261,6 +355,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1823284B2C7E1D4D00074D5B /* jm.mp3 in Resources */,
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
@@ -341,6 +436,23 @@
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build";
 		};
+		D7ED09C9751EA6A0695CEA45 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		E11ABC76327DC740FB5DD513 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -378,8 +490,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				182328502C7E1D4D00074D5B /* AList.swift in Sources */,
+				1823284A2C7E1D4D00074D5B /* HCKeepBGRunManager.swift in Sources */,
+				182328542C7E1D4D00074D5B /* AListService.swift in Sources */,
+				1823284C2C7E1D4D00074D5B /* AppConfigBridge.swift in Sources */,
+				182328522C7E1D4D00074D5B /* NotificationManager.swift in Sources */,
+				1823284F2C7E1D4D00074D5B /* LogLevel.swift in Sources */,
+				182328512C7E1D4D00074D5B /* Logger.swift in Sources */,
+				1823284E2C7E1D4D00074D5B /* IosBridge.swift in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
+				1823284D2C7E1D4D00074D5B /* CommonBridge.swift in Sources */,
+				182328552C7E1D4D00074D5B /* GeneratedApi.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -454,7 +576,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = iphoneos;
@@ -470,7 +592,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = U6N4EJ8787;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Xlist;
@@ -480,7 +602,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
-				PRODUCT_BUNDLE_IDENTIFIER = io.xlist;
+				PRODUCT_BUNDLE_IDENTIFIER = io.xlist.alist;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -589,7 +711,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -638,7 +760,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = iphoneos;
@@ -656,7 +778,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = U6N4EJ8787;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Xlist;
@@ -666,7 +788,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
-				PRODUCT_BUNDLE_IDENTIFIER = io.xlist;
+				PRODUCT_BUNDLE_IDENTIFIER = io.xlist.alist;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -686,7 +808,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = U6N4EJ8787;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Xlist;
@@ -696,7 +818,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
-				PRODUCT_BUNDLE_IDENTIFIER = io.xlist;
+				PRODUCT_BUNDLE_IDENTIFIER = io.xlist.alist;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
