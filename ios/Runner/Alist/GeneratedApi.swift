@@ -11,9 +11,6 @@ import Foundation
   #error("Unsupported platform.")
 #endif
 
-extension FlutterError: Swift.Error {
-}
-
 private func wrapResult(_ result: Any?) -> [Any?] {
   return [result]
 }
@@ -493,6 +490,9 @@ class AndroidSetup {
 /// Generated protocol from Pigeon that represents Flutter messages that can be called from Swift.
 protocol EventProtocol {
   func onServiceStatusChanged(isRunning isRunningArg: Bool, completion: @escaping (Result<Void, FlutterError>) -> Void)
+  func onProcessExit(var1 var1Arg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void)
+  func onShutdown(var1 var1Arg: String, completion: @escaping (Result<Void, FlutterError>) -> Void)
+  func onStartError(var1 var1Arg: String, var2 var2Arg: String, completion: @escaping (Result<Void, FlutterError>) -> Void)
   func onServerLog(level levelArg: Int64, time timeArg: String, log logArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void)
 }
 class Event: EventProtocol {
@@ -504,6 +504,60 @@ class Event: EventProtocol {
     let channelName: String = "dev.flutter.pigeon.xlist.Event.onServiceStatusChanged"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger)
     channel.sendMessage([isRunningArg] as [Any?]) { response in
+      guard let listResponse = response as? [Any?] else {
+        completion(.failure(createConnectionError(withChannelName: channelName)))
+        return
+      }
+      if listResponse.count > 1 {
+        let code: String = listResponse[0] as! String
+        let message: String? = nilOrValue(listResponse[1])
+        let details: String? = nilOrValue(listResponse[2])
+        completion(.failure(FlutterError(code: code, message: message, details: details)))
+      } else {
+        completion(.success(Void()))
+      }
+    }
+  }
+  func onProcessExit(var1 var1Arg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void) {
+    let channelName: String = "dev.flutter.pigeon.xlist.Event.onProcessExit"
+    let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger)
+    channel.sendMessage([var1Arg] as [Any?]) { response in
+      guard let listResponse = response as? [Any?] else {
+        completion(.failure(createConnectionError(withChannelName: channelName)))
+        return
+      }
+      if listResponse.count > 1 {
+        let code: String = listResponse[0] as! String
+        let message: String? = nilOrValue(listResponse[1])
+        let details: String? = nilOrValue(listResponse[2])
+        completion(.failure(FlutterError(code: code, message: message, details: details)))
+      } else {
+        completion(.success(Void()))
+      }
+    }
+  }
+  func onShutdown(var1 var1Arg: String, completion: @escaping (Result<Void, FlutterError>) -> Void) {
+    let channelName: String = "dev.flutter.pigeon.xlist.Event.onShutdown"
+    let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger)
+    channel.sendMessage([var1Arg] as [Any?]) { response in
+      guard let listResponse = response as? [Any?] else {
+        completion(.failure(createConnectionError(withChannelName: channelName)))
+        return
+      }
+      if listResponse.count > 1 {
+        let code: String = listResponse[0] as! String
+        let message: String? = nilOrValue(listResponse[1])
+        let details: String? = nilOrValue(listResponse[2])
+        completion(.failure(FlutterError(code: code, message: message, details: details)))
+      } else {
+        completion(.success(Void()))
+      }
+    }
+  }
+  func onStartError(var1 var1Arg: String, var2 var2Arg: String, completion: @escaping (Result<Void, FlutterError>) -> Void) {
+    let channelName: String = "dev.flutter.pigeon.xlist.Event.onStartError"
+    let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger)
+    channel.sendMessage([var1Arg, var2Arg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return

@@ -39,12 +39,16 @@ import splitties.systemservices.powerManager
 class AListService : Service() {
     companion object {
         const val TAG = "AlistService"
+
+        // 关闭
         const val ACTION_SHUTDOWN =
             "com.github.jing332.alistandroid.service.AlistService.ACTION_SHUTDOWN"
 
+        // 复制访问地址
         const val ACTION_COPY_ADDRESS =
             "com.github.jing332.alistandroid.service.AlistService.ACTION_COPY_ADDRESS"
 
+        // 状态改变
         const val ACTION_STATUS_CHANGED =
             "com.github.jing332.alistandroid.service.AlistService.ACTION_STATUS_CHANGED"
 
@@ -55,14 +59,11 @@ class AListService : Service() {
         const val EVENT_TYPE_START_ERROR = "start_error"
         const val EVENT_TYPE_PROCESS_EXIT = "process_exit"
 
-        // 广播数据参数
-        const val EVENT_INT_PARAM = "event_int_param"
-        const val EVENT_STRING_PARAM1 = "event_string_param1"
-        const val EVENT_STRING_PARAM2 = "event_string_param2"
-
+        // 通知相关
         const val NOTIFICATION_CHAN_ID = "alist_server"
         const val FOREGROUND_ID = 5224
 
+        // 运行状态
         var isRunning: Boolean = false
     }
 
@@ -95,8 +96,6 @@ class AListService : Service() {
     override fun onCreate() {
         super.onCreate()
 
-        Log.d(TAG, "onCreate: $isRunning")
-
         initOrUpdateNotification()
 
         if (AppConfig.isWakeLockEnabled) {
@@ -112,8 +111,6 @@ class AListService : Service() {
     @Suppress("DEPRECATION")
     override fun onDestroy() {
         super.onDestroy()
-
-        Log.d(TAG, "onDestroy: $isRunning")
 
         mWakeLock?.release()
         mWakeLock = null
@@ -175,14 +172,12 @@ class AListService : Service() {
             0
 
         /*点击通知跳转*/
-        val pendingIntent =
-            PendingIntent.getActivity(
-                this, 0, Intent(
-                    this,
-                    MainActivity::class.java
-                ),
-                pendingIntentFlags
-            )
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            Intent(this, MainActivity::class.java),
+            pendingIntentFlags
+        )
         /*当点击退出按钮时发送广播*/
         val shutdownAction: PendingIntent =
             PendingIntent.getBroadcast(
