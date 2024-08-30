@@ -4,13 +4,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:xlist/common/utils.dart';
 import 'package:xlist/generated/l10n.dart';
-import 'package:xlist/generated_api.dart';
-import 'package:xlist/pages/alist/alist/alist.dart';
-import 'package:xlist/pages/alist/alist_info/pwd_edit_dialog.dart';
+import 'package:xlist/pages/alist/alist/alist_controller.dart';
+import 'package:xlist/pages/alist/widgets/pwd_edit_dialog.dart';
 import 'package:xlist/routes/app_pages.dart';
 
 import 'logic.dart';
 
+/// AList 当前状态信息
 class AListInfoPage extends StatefulWidget {
   const AListInfoPage({super.key});
 

@@ -9,8 +9,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:xlist/common/utils.dart';
 import 'package:xlist/generated/l10n.dart';
 import 'package:xlist/generated_api.dart';
-import 'package:xlist/pages/alist/alist/alist.dart';
-import 'package:xlist/pages/alist/alist_info/pwd_edit_dialog.dart';
+import 'package:xlist/pages/alist/alist/alist_controller.dart';
+import 'package:xlist/pages/alist/widgets/pwd_edit_dialog.dart';
 import '../contant/native_bridge.dart';
 import 'preference_widgets.dart';
 
@@ -48,16 +48,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final controller = Get.put(_SettingsController());
     final aListController = Get.find<AListController>();
     return CupertinoPageScaffold(
-        navigationBar: CupertinoNavigationBar(
-          backgroundColor: Get.theme.scaffoldBackgroundColor,
-          border: Border.all(width: 0, color: Colors.transparent),
-          leading: CommonUtils.backButton,
-          middle: const Text(
-            "AList",
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
+        navigationBar: _buildNavigationBar(),
         child: Obx(
           () => ListView(
             children: [
@@ -234,6 +225,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ],
           ),
         ));
+  }
+
+  CupertinoNavigationBar _buildNavigationBar() {
+    return CupertinoNavigationBar(
+        backgroundColor: Get.theme.scaffoldBackgroundColor,
+        border: Border.all(width: 0, color: Colors.transparent),
+        leading: CommonUtils.backButton,
+        middle: const Text(
+          "AList 设置",
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
   }
 }
 

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:xlist/pages/alist/alist/alist.dart';
+import 'package:xlist/pages/alist/alist/alist_controller.dart';
 
 import 'package:xlist/services/index.dart';
 import 'package:xlist/storages/index.dart';
@@ -26,12 +26,13 @@ class Global {
     // HttpOverrides
     HttpOverrides.global = XlistHttpOverrides();
 
+    // state
+    await Get.put(AListController());
+
     // GetStorage
     await GetStorage.init();
 
     // Storage
-    await Get.put(AListController());
-
     await Get.put(CommonStorage());
     await Get.putAsync(() => UserStorage().init());
     await Get.putAsync(() => PreferencesStorage().init());

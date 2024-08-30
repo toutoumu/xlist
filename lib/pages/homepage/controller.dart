@@ -8,7 +8,7 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xlist/models/user.dart';
 import 'package:xlist/common/index.dart';
 import 'package:xlist/models/index.dart';
-import 'package:xlist/pages/alist/alist/alist.dart';
+import 'package:xlist/pages/alist/alist/alist_controller.dart';
 import 'package:xlist/services/index.dart';
 import 'package:xlist/storages/index.dart';
 import 'package:xlist/repositorys/index.dart';

@@ -5,11 +5,6 @@ import 'package:xlist/pages/alist/contant/native_bridge.dart';
 
 
 class AlistInfoLogic extends GetxController {
-  final _password = "".obs;
-  final _userName = "".obs;
-  final _wIp = "".obs;
-  final _port = 5244.obs;
-
   final _dataDir = "".obs;
   final _autoUpdate = true.obs;
   final _managerStorageGranted = true.obs;
