@@ -6,7 +6,7 @@ import 'package:xlist/common/utils.dart';
 import 'package:xlist/generated/l10n.dart';
 import 'package:xlist/generated_api.dart';
 import 'package:xlist/pages/alist/alist/alist.dart';
-import 'package:xlist/pages/alist/alist/pwd_edit_dialog.dart';
+import 'package:xlist/pages/alist/alist_info/pwd_edit_dialog.dart';
 import 'package:xlist/routes/app_pages.dart';
 
 import 'logic.dart';
@@ -47,25 +47,7 @@ class _AListInfoPageState extends State<AListInfoPage> {
     final controller = Get.put(AlistInfoLogic());
     final aListController = Get.find<AListController>();
     return CupertinoPageScaffold(
-        navigationBar: CupertinoNavigationBar(
-            backgroundColor: Get.theme.scaffoldBackgroundColor,
-            border: Border.all(width: 0, color: Colors.transparent),
-            leading: CommonUtils.backButton,
-            middle: const Text(
-              "AList",
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-              // 刷新
-              CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () async {
-                    // controller.updateData();
-                    Get.toNamed(Routes.LOG);
-                  },
-                  child: const Icon(Icons.blur_linear_sharp)),
-            ])),
+        navigationBar: _buildNavigationBar(),
         child: ListView(
           children: [
             CupertinoListSection.insetGrouped(
@@ -157,6 +139,34 @@ class _AListInfoPageState extends State<AListInfoPage> {
                 ]),
           ],
         ));
+  }
+
+  CupertinoNavigationBar _buildNavigationBar() {
+    return CupertinoNavigationBar(
+        backgroundColor: Get.theme.scaffoldBackgroundColor,
+        border: Border.all(width: 0, color: Colors.transparent),
+        leading: CommonUtils.backButton,
+        middle: const Text(
+          "AList",
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+          // 日志
+          CupertinoButton(
+              padding: EdgeInsets.zero,
+              onPressed: () async {
+                Get.toNamed(Routes.LOG);
+              },
+              child: const Icon(Icons.blur_linear_sharp)),
+          // AList 设置
+          CupertinoButton(
+              padding: EdgeInsets.zero,
+              onPressed: () async {
+                Get.toNamed(Routes.SETTING_ALIST);
+              },
+              child: const Icon(Icons.settings)),
+        ]));
   }
 
   /// AList状态

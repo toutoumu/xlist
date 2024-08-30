@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+/// 密码编辑对话框
 class PwdEditDialog extends StatefulWidget {
   final ValueChanged<String> onConfirm;
   final String? password;

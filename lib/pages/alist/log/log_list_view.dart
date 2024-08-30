@@ -1,17 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:xlist/pages/alist/models/log.dart';
+import 'package:xlist/pages/alist/models/log_level.dart';
 
-import 'log_level_view.dart';
-
-class Log {
-  final int level;
-  final String time;
-  final String content;
-
-  Log(this.level, this.time, this.content);
-}
-
+/// 日志列表
 class LogListView extends StatefulWidget {
-  const LogListView({Key? key, required this.logs, this.controller}) : super(key: key);
+  const LogListView({super.key, required this.logs, this.controller});
 
   final List<Log> logs;
   final ScrollController? controller;
@@ -36,5 +29,24 @@ class _LogListViewState extends State<LogListView> {
         );
       },
     );
+  }
+}
+
+// 日志项
+class LogLevelView extends StatefulWidget {
+  final int level;
+
+  const LogLevelView({super.key, required this.level});
+
+  @override
+  State<LogLevelView> createState() => _LogLevelViewState();
+}
+
+class _LogLevelViewState extends State<LogLevelView> {
+  @override
+  Widget build(BuildContext context) {
+    final s = LogLevel.toStr(widget.level);
+    final c = LogLevel.toColor(widget.level);
+    return Text(s, style: TextStyle(color: c));
   }
 }

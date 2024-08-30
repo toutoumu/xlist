@@ -150,14 +150,9 @@ class SettingPage extends GetView<SettingController> {
                   ),
                   children: [
                     _buildListTile(
-                      title: "Log",
-                      icon: Icons.star_rounded,
-                      onTap: () => Get.toNamed(Routes.ALIST),
-                    ),
-                    _buildListTile(
                       title: S.of(context).appName,
-                      icon: Icons.star_rounded,
-                      onTap: () => Get.toNamed(Routes.SETTING_ALIST),
+                      icon: Icons.storage_rounded,
+                      onTap: () => Get.toNamed(Routes.ALIST),
                     ),
                     _buildListTile(
                       title: 'server'.tr,

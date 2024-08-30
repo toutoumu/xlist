@@ -10,7 +10,7 @@ import 'package:xlist/common/utils.dart';
 import 'package:xlist/generated/l10n.dart';
 import 'package:xlist/generated_api.dart';
 import 'package:xlist/pages/alist/alist/alist.dart';
-import 'package:xlist/pages/alist/alist/pwd_edit_dialog.dart';
+import 'package:xlist/pages/alist/alist_info/pwd_edit_dialog.dart';
 import '../contant/native_bridge.dart';
 import 'preference_widgets.dart';
 

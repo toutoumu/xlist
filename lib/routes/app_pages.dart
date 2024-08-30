@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:xlist/pages/alist/alist/alist.dart';
 import 'package:xlist/pages/alist/alist_info/view.dart';
+import 'package:xlist/pages/alist/log/view.dart';
 import 'package:xlist/pages/alist/settings/settings.dart';
 
 import 'package:xlist/pages/file/index.dart';
@@ -96,12 +97,20 @@ class AppPages {
     // AList
     GetPage(
       name: _Paths.ALIST,
+      title: 'AList',
       page: () => const AListInfoPage(),
       binding: SettingBinding(),
       children: [
         GetPage(
           name: _Paths.LOG,
-          page: () => const AListLog(),
+          title: 'AList 日志',
+          page: () => const AListLogPage(),
+          binding: AudioPlayerBinding(),
+        ),
+        GetPage(
+          name: _Paths.LOG,
+          title: 'AList 日志',
+          page: () => const AListLogPage(),
           binding: AudioPlayerBinding(),
         ),
       ],
