@@ -137,6 +137,25 @@ class _AListInfoPageState extends State<AListInfoPage> {
                     additionalInfo: "同\"账号信息\"",
                   )
                 ]),
+            CupertinoListSection.insetGrouped(
+                backgroundColor: CommonUtils.backgroundColor,
+                dividerMargin: 20,
+                additionalDividerMargin: 30,
+                header: Container(
+                  padding: const EdgeInsets.only(left: 15),
+                  alignment: Alignment.centerLeft,
+                  child: Text('AList 版本号', style: Get.textTheme.bodySmall),
+                ),
+                children: [
+                  // 服务状态
+                  Obx(() {
+                    return _buildListTile(
+                      title: "AList 版本号",
+                      icon: Icons.account_circle_outlined,
+                      additionalInfo: aListController.aListVersion.value,
+                    );
+                  }),
+                ])
           ],
         ));
   }

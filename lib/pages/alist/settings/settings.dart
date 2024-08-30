@@ -4,6 +4,7 @@ import 'dart:ffi';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:xlist/common/utils.dart';
@@ -50,194 +51,300 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return CupertinoPageScaffold(
         navigationBar: _buildNavigationBar(),
         child: Obx(
-          () => ListView(
-            children: [
-              // SizedBox(height: MediaQuery.of(context).padding.top),
-              Visibility(
-                visible: !controller._managerStorageGranted.value ||
-                    !controller._notificationGranted.value ||
-                    !controller._storageGranted.value,
-                child:
-                    DividerPreference(title: S.of(context).importantSettings),
-              ),
-
-              // 所有文件访问权限 >= Android 11 (api 30)
-              Visibility(
-                visible: !controller._managerStorageGranted.value,
-                child: BasicPreference(
-                  title: S.of(context).grantManagerStoragePermission,
-                  subtitle: S.of(context).grantStoragePermissionDesc,
-                  onTap: () {
-                    Permission.manageExternalStorage.request();
-                  },
-                ),
-              ),
-
-              // 读写外置存储权限 < Android 11 (api 30)
-              Visibility(
-                  visible: !controller._storageGranted.value,
-                  child: BasicPreference(
-                    title: S.of(context).grantStoragePermission,
-                    subtitle: S.of(context).grantStoragePermissionDesc,
-                    onTap: () {
-                      Permission.storage.request();
-                    },
-                  )),
-
-              // 申请通知权限 > Android 12 (api 31)
-              Visibility(
-                  visible: !controller._notificationGranted.value,
-                  child: BasicPreference(
-                    title: S.of(context).grantNotificationPermission,
-                    subtitle: S.of(context).grantNotificationPermissionDesc,
-                    onTap: () {
-                      Permission.notification.request();
-                    },
-                  )),
-
-              DividerPreference(title: S.of(context).general),
-
-              // 自动检查更新
-              SwitchPreference(
-                title: S.of(context).autoCheckForUpdates,
-                subtitle: S.of(context).autoCheckForUpdatesDesc,
-                icon: const Icon(Icons.system_update),
-                value: controller.autoUpdate,
-                onChanged: (value) {
-                  controller.autoUpdate = value;
-                },
-              ),
-
-              // 唤醒屏幕
-              SwitchPreference(
-                title: S.of(context).wakeLock,
-                subtitle: S.of(context).wakeLockDesc,
-                icon: const Icon(Icons.screen_lock_portrait),
-                value: controller.wakeLock,
-                onChanged: (value) {
-                  controller.wakeLock = value;
-                },
-              ),
-
-              // 开机自启动服务
-              SwitchPreference(
-                title: S.of(context).bootAutoStartService,
-                subtitle: S.of(context).bootAutoStartServiceDesc,
-                icon: const Icon(Icons.power_settings_new),
-                value: controller.startAtBoot,
-                onChanged: (value) {
-                  controller.startAtBoot = value;
-                },
-              ),
-
-              // 将网页设置为打开首页
-              SwitchPreference(
-                title: S.of(context).autoStartWebPage,
-                subtitle: S.of(context).autoStartWebPageDesc,
-                icon: const Icon(Icons.open_in_browser),
-                value: controller._autoStartWebPage.value,
-                onChanged: (value) {
-                  controller.autoStartWebPage = value;
-                },
-              ),
-
-              // AList data 文件夹路径
-              BasicPreference(
-                title: S.of(context).dataDirectory,
-                subtitle: controller._dataDir.value,
-                leading: const Icon(Icons.folder),
-                onTap: () async {
-                  final path = await FilePicker.platform.getDirectoryPath();
-                  if (path == null) {
-                    Get.showSnackbar(GetSnackBar(
-                        message: S.current.setDefaultDirectory,
-                        duration: const Duration(seconds: 3),
-                        mainButton: TextButton(
-                          onPressed: () {
-                            controller.setDataDir("");
-                            Get.back();
-                          },
-                          child: Text(S.current.confirm),
-                        )));
-                  } else {
-                    controller.setDataDir(path);
-                  }
-                },
-              ),
-
-              DividerPreference(title: S.of(context).general),
-              // 将网页设置为打开首页
-              SwitchPreference(
-                title: S.of(context).autoStartWebPage,
-                subtitle: S.of(context).autoStartWebPageDesc,
-                icon: const Icon(Icons.open_in_browser),
-                value: aListController.isRunning.value,
-                onChanged: (value) {
-                  NativeBridge.android.startService();
-                },
-              ),
-
-              BasicPreference(
-                title: "用户名",
-                subtitle: controller._userName.value,
-                leading: const Icon(Icons.folder),
-                onTap: () async {},
-              ),
-
-              BasicPreference(
-                title: "密码",
-                subtitle: controller._password.value,
-                leading: const Icon(Icons.folder),
-                onTap: () async {
-                  showDialog(
-                      context: context,
-                      builder: (context) => PwdEditDialog(
-                            onConfirm: (pwd) {
-                              Get.showSnackbar(GetSnackBar(
-                                  title: S.current.setAdminPassword,
-                                  message: pwd,
-                                  duration: const Duration(seconds: 1)));
-                              Android().setAdminPwd(pwd);
-                            },
-                            password: controller._password.value,
-                          ));
-                },
-              ),
-
-              BasicPreference(
-                title: "服务地址",
-                subtitle: "${controller._wIp.value}:${controller._port.value}",
-                leading: const Icon(Icons.open_in_browser),
-                onTap: () async {},
-              ),
-
-              // 界面
-              DividerPreference(title: S.of(context).uiSettings),
-              // 静默跳转APP
-              SwitchPreference(
-                  icon: const Icon(Icons.pan_tool_alt_outlined),
-                  title: S.of(context).silentJumpApp,
-                  subtitle: S.of(context).silentJumpAppDesc,
-                  value: controller._silentJumpApp.value,
-                  onChanged: (value) {
-                    controller.silentJumpApp = value;
-                  })
-            ],
-          ),
+          // () => _buildListView(controller, context, aListController),
+          () => _buildCupertinoListView(context, controller),
         ));
+  }
+
+  ListView _buildCupertinoListView(
+      BuildContext context, _SettingsController controller) {
+    return ListView(children: [
+      CupertinoListSection.insetGrouped(
+          backgroundColor: CommonUtils.backgroundColor,
+          dividerMargin: 20,
+          additionalDividerMargin: 30,
+          children: [
+            _buildListTile(
+              title: S.of(context).wakeLock,
+              subtitle: Text(S.of(context).wakeLockDesc),
+              icon: Icons.screen_lock_portrait,
+              trailing: CupertinoSwitch(
+                  value: controller.wakeLock,
+                  onChanged: (value) {
+                    controller.wakeLock = value;
+                  }),
+            ),
+            _buildListTile(
+              title: S.of(context).bootAutoStartService,
+              subtitle: Text(S.of(context).bootAutoStartServiceDesc),
+              icon: Icons.power_settings_new,
+              trailing: CupertinoSwitch(
+                  value: controller.startAtBoot,
+                  onChanged: (value) {
+                    controller.startAtBoot = value;
+                  }),
+            ),
+            _buildListTile(
+              title: S.of(context).dataDirectory,
+              subtitle: Text(controller._dataDir.value),
+              icon: Icons.folder,
+              onTap: () async {
+                final path = await FilePicker.platform.getDirectoryPath();
+                if (path == null) {
+                  Get.showSnackbar(GetSnackBar(
+                      message: S.current.setDefaultDirectory,
+                      duration: const Duration(seconds: 3),
+                      mainButton: TextButton(
+                        onPressed: () {
+                          controller.setDataDir("");
+                          Get.back();
+                        },
+                        child: Text(S.current.confirm),
+                      )));
+                } else {
+                  controller.setDataDir(path);
+                }
+              },
+            )
+          ])
+    ]);
+  }
+
+  ListView _buildListView(_SettingsController controller, BuildContext context,
+      AListController aListController) {
+    return ListView(
+      children: [
+        // SizedBox(height: MediaQuery.of(context).padding.top),
+        Visibility(
+          visible: !controller._managerStorageGranted.value ||
+              !controller._notificationGranted.value ||
+              !controller._storageGranted.value,
+          child: DividerPreference(title: S.of(context).importantSettings),
+        ),
+
+        // 所有文件访问权限 >= Android 11 (api 30)
+        Visibility(
+          visible: !controller._managerStorageGranted.value,
+          child: BasicPreference(
+            title: S.of(context).grantManagerStoragePermission,
+            subtitle: S.of(context).grantStoragePermissionDesc,
+            onTap: () {
+              Permission.manageExternalStorage.request();
+            },
+          ),
+        ),
+
+        // 读写外置存储权限 < Android 11 (api 30)
+        Visibility(
+            visible: !controller._storageGranted.value,
+            child: BasicPreference(
+              title: S.of(context).grantStoragePermission,
+              subtitle: S.of(context).grantStoragePermissionDesc,
+              onTap: () {
+                Permission.storage.request();
+              },
+            )),
+
+        // 申请通知权限 > Android 12 (api 31)
+        Visibility(
+            visible: !controller._notificationGranted.value,
+            child: BasicPreference(
+              title: S.of(context).grantNotificationPermission,
+              subtitle: S.of(context).grantNotificationPermissionDesc,
+              onTap: () {
+                Permission.notification.request();
+              },
+            )),
+
+        DividerPreference(title: S.of(context).general),
+
+        // 自动检查更新
+        SwitchPreference(
+          title: S.of(context).autoCheckForUpdates,
+          subtitle: S.of(context).autoCheckForUpdatesDesc,
+          icon: const Icon(Icons.system_update),
+          value: controller.autoUpdate,
+          onChanged: (value) {
+            controller.autoUpdate = value;
+          },
+        ),
+
+        // 唤醒屏幕
+        SwitchPreference(
+          title: S.of(context).wakeLock,
+          subtitle: S.of(context).wakeLockDesc,
+          icon: const Icon(Icons.screen_lock_portrait),
+          value: controller.wakeLock,
+          onChanged: (value) {
+            controller.wakeLock = value;
+          },
+        ),
+
+        // 开机自启动服务
+        SwitchPreference(
+          title: S.of(context).bootAutoStartService,
+          subtitle: S.of(context).bootAutoStartServiceDesc,
+          icon: const Icon(Icons.power_settings_new),
+          value: controller.startAtBoot,
+          onChanged: (value) {
+            controller.startAtBoot = value;
+          },
+        ),
+
+        // 将网页设置为打开首页
+        SwitchPreference(
+          title: S.of(context).autoStartWebPage,
+          subtitle: S.of(context).autoStartWebPageDesc,
+          icon: const Icon(Icons.open_in_browser),
+          value: controller._autoStartWebPage.value,
+          onChanged: (value) {
+            controller.autoStartWebPage = value;
+          },
+        ),
+
+        // AList data 文件夹路径
+        BasicPreference(
+          title: S.of(context).dataDirectory,
+          subtitle: controller._dataDir.value,
+          leading: const Icon(Icons.folder),
+          onTap: () async {
+            final path = await FilePicker.platform.getDirectoryPath();
+            if (path == null) {
+              Get.showSnackbar(GetSnackBar(
+                  message: S.current.setDefaultDirectory,
+                  duration: const Duration(seconds: 3),
+                  mainButton: TextButton(
+                    onPressed: () {
+                      controller.setDataDir("");
+                      Get.back();
+                    },
+                    child: Text(S.current.confirm),
+                  )));
+            } else {
+              controller.setDataDir(path);
+            }
+          },
+        ),
+
+        DividerPreference(title: S.of(context).general),
+        // 将网页设置为打开首页
+        SwitchPreference(
+          title: S.of(context).autoStartWebPage,
+          subtitle: S.of(context).autoStartWebPageDesc,
+          icon: const Icon(Icons.open_in_browser),
+          value: aListController.isRunning.value,
+          onChanged: (value) {
+            NativeBridge.android.startService();
+          },
+        ),
+
+        BasicPreference(
+          title: "用户名",
+          subtitle: controller._userName.value,
+          leading: const Icon(Icons.folder),
+          onTap: () async {},
+        ),
+
+        BasicPreference(
+          title: "密码",
+          subtitle: controller._password.value,
+          leading: const Icon(Icons.folder),
+          onTap: () async {
+            showDialog(
+                context: context,
+                builder: (context) => PwdEditDialog(
+                      onConfirm: (pwd) {
+                        Get.showSnackbar(GetSnackBar(
+                            title: S.current.setAdminPassword,
+                            message: pwd,
+                            duration: const Duration(seconds: 1)));
+                        Android().setAdminPwd(pwd);
+                      },
+                      password: controller._password.value,
+                    ));
+          },
+        ),
+
+        BasicPreference(
+          title: "服务地址",
+          subtitle: "${controller._wIp.value}:${controller._port.value}",
+          leading: const Icon(Icons.open_in_browser),
+          onTap: () async {},
+        ),
+
+        // 界面
+        DividerPreference(title: S.of(context).uiSettings),
+        // 静默跳转APP
+        SwitchPreference(
+            icon: const Icon(Icons.pan_tool_alt_outlined),
+            title: S.of(context).silentJumpApp,
+            subtitle: S.of(context).silentJumpAppDesc,
+            value: controller._silentJumpApp.value,
+            onChanged: (value) {
+              controller.silentJumpApp = value;
+            })
+      ],
+    );
   }
 
   CupertinoNavigationBar _buildNavigationBar() {
     return CupertinoNavigationBar(
-        backgroundColor: Get.theme.scaffoldBackgroundColor,
-        border: Border.all(width: 0, color: Colors.transparent),
-        leading: CommonUtils.backButton,
-        middle: const Text(
-          "AList 设置",
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
+      border: Border.all(width: 0, color: Colors.transparent),
+      leading: CommonUtils.backButton,
+      middle: const Text(
+        "AList 设置",
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
+  /// ListTile
+  /// [title] 标题
+  /// [icon] 图标
+  /// [onTap] 点击事件
+  /// [additionalInfo] 附加信息
+  Widget _buildListTile({
+    required String title,
+    required IconData icon,
+    double? iconSize,
+    Color? iconColor,
+    Function()? onTap,
+    Widget? subtitle,
+    Widget trailing = const CupertinoListTileChevron(),
+    String additionalInfo = '',
+  }) {
+    return CupertinoListTile(
+      title: Row(
+        children: [
+          Text(title, style: Get.textTheme.bodyLarge),
+          const SizedBox(width: 10),
+        ],
+      ),
+      padding: const EdgeInsets.only(left: 15, right: 10),
+      leading: Icon(
+        icon,
+        size: iconSize ?? CommonUtils.navIconSize,
+        color: iconColor ?? Get.theme.primaryColor,
+      ),
+      leadingToTitle: 5,
+      subtitle: subtitle,
+      additionalInfo: additionalInfo.isEmpty
+          ? const SizedBox()
+          : Container(
+              width: 400.w,
+              alignment: Alignment.centerRight,
+              child: Text(
+                additionalInfo,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Get.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+              ),
+            ),
+      trailing: trailing,
+      onTap: onTap,
+    );
   }
 }
 

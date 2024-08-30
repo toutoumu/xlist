@@ -11,6 +11,9 @@ import Foundation
   #error("Unsupported platform.")
 #endif
 
+extension FlutterError: Swift.Error {
+}
+
 private func wrapResult(_ result: Any?) -> [Any?] {
   return [result]
 }

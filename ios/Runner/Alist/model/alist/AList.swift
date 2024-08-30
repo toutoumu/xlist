@@ -33,66 +33,30 @@ class AList: NSObject, AlistlibEventProtocol, AlistlibLogCallbackProtocol {
     /**
      * 初始化 Alist 服务
      */
-    func initAlist() {
-        // Alistlib.AlistlibSetConfigDebug(true)
-        Alistlib.AlistlibSetConfigData(dataDir())
+    func initAlist(event:AlistlibEventProtocol) {
+        // Alistlib.AlistlibSetConfigDebug(true) // debug 模式
+        Alistlib.AlistlibSetConfigData(dataDir()) // 配置文件目录
         Alistlib.AlistlibSetConfigLogStd(true)
+        
+        // 初始化
         var error: NSError?
-        Alistlib.AlistlibInit(self, self, &error)
+        Alistlib.AlistlibInit(event, self, &error)
         if (error == nil) {
-            NSLog("ok")
+            NSLog("AlistlibInit ok")
         } else {
-            NSLog("server start 服务启动失败")
+            NSLog("AlistlibInit Error")
             let now = CFAbsoluteTimeGetCurrent()
             onLog(Int16(LogLevel.ERROR), time: Int64(now), message: "服务启动失败")
         }
     }
-
-    func onProcessExit(_ code: Int) {
-
-    }
-
-    func onStartError(_ t: String?, err: String?) {
-        Logger.instance.log(level: LogLevel.FATAL, time: t ?? "", msg: err ?? "")
-    }
     
-    func onShutdown(_ t: String?) {
-        listeners.forEach { element in
-            element.onShutdown(type: t ?? "")
-        }
-    }
-
     /**
-     * 是否正在运行
+     * 启动 Alist
      */
-    func isRunning() -> Bool {
-        return Alistlib.AlistlibIsRunning("http")
-    }
-
-    /**
-     * 设置 Alist 管理员密码
-     */
-    func setAdminPassword(pwd: String) {
-        if (!isRunning()) {
-            print("notRunning")
-            self.initAlist()
-        }else{
-            print("isRunning")
-        }
-        Alistlib.AlistlibSetConfigData(dataDir())
-        Alistlib.AlistlibSetAdminPassword(pwd)
-    }
-
-    func getAdminPassword() throws -> String {
-        return Alistlib.AlistlibGetAdminPassword()
-    }
-    
-    func getAdminUsername() throws -> String {
-        return Alistlib.AlistlibGetAdminUsername()
-    }
-    
-    func getOutboundIPString() throws -> String {
-        return Alistlib.AlistlibGetOutboundIPString()
+    func startup() {
+        // init()
+        // self.initAlist()
+        Alistlib.AlistlibStart()
     }
     
     /**
@@ -111,12 +75,59 @@ class AList: NSObject, AlistlibEventProtocol, AlistlibLogCallbackProtocol {
     }
 
     /**
-     * 启动 Alist
+     * AlistlibEventProtocol
      */
-    func startup() {
-        // init()
-        self.initAlist()
-        Alistlib.AlistlibStart()
+    func onProcessExit(_ code: Int) {
+
+    }
+
+    /**
+     * AlistlibEventProtocol
+     */
+    func onStartError(_ t: String?, err: String?) {
+        Logger.instance.log(level: LogLevel.FATAL, time: t ?? "", msg: err ?? "")
+    }
+    
+    /**
+     * AlistlibEventProtocol
+     */
+    func onShutdown(_ t: String?) {
+        
+    }
+
+    /**
+     * 设置 Alist 管理员密码
+     */
+    func setAdminPassword(pwd: String) {
+        /*
+        if (!isRunning()) {
+            print("notRunning")
+            self.initAlist(event:self)
+        }else{
+            print("isRunning")
+        }
+        Alistlib.AlistlibSetConfigData(dataDir())
+        */
+        Alistlib.AlistlibSetAdminPassword(pwd)
+    }
+
+    func getAdminPassword() throws -> String {
+        return Alistlib.AlistlibGetAdminPassword()
+    }
+    
+    func getAdminUsername() throws -> String {
+        return Alistlib.AlistlibGetAdminUsername()
+    }
+    
+    func getOutboundIPString() throws -> String {
+        return Alistlib.AlistlibGetOutboundIPString()
+    }
+    
+    /**
+     * 是否正在运行
+     */
+    func isRunning() -> Bool {
+        return Alistlib.AlistlibIsRunning("http")
     }
 
     /**
@@ -127,7 +138,8 @@ class AList: NSObject, AlistlibEventProtocol, AlistlibLogCallbackProtocol {
     }
     
     /**
-     *  打印日志, 这个日志会在日志列表展示
+     *  这个是 提供给 AList 服务端调用的
+     *  打印日志, 这个日志会在日志列表展示,
      *  @param level LogLevel.xxx
      *  @param time let now = CFAbsoluteTimeGetCurrent()
      */
@@ -141,34 +153,7 @@ class AList: NSObject, AlistlibEventProtocol, AlistlibLogCallbackProtocol {
         
         // 格式化日期
         let formattedDate = dateFormatter.string(from: date)
-
+        
         Logger.instance.log(level: Int(level), time: formattedDate, msg: message ?? "")
-    }
-    
-    // Alist 关闭事件的监听和处理
-    var listeners = [ShutdownListenerProtocol]()
-
-    func addListener(listener: ShutdownListenerProtocol) {
-        listeners.append(listener)
-    }
-
-    func removeListener(listener: ShutdownListenerProtocol) {
-
-    }
-}
-
-public protocol ShutdownListenerProtocol {
-    func onShutdown(type: String)
-}
-
-class ShutdownListener: ShutdownListenerProtocol {
-    var event: Event
-
-    init(event: Event) {
-        self.event = event
-    }
-
-    func onShutdown(type: String) {
-        // todo 这里要写逻辑代码
     }
 }
