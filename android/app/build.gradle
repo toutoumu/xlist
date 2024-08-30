@@ -82,6 +82,7 @@ dependencies {
     implementation 'com.louiscad.splitties:splitties-systemservices:3.0.0'
     implementation 'com.github.cioccarellia:ksprefs:2.4.0'
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation "com.squareup.okhttp3:okhttp:4.10.0"
 
     // Room
 //    implementation("androidx.room:room-runtime:$room_version")

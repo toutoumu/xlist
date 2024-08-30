@@ -12,6 +12,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.nfc.Tag
 import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
@@ -31,10 +33,24 @@ import com.github.jing332.alistflutter.utils.AndroidUtils.registerReceiverCompat
 import com.github.jing332.alistflutter.utils.ClipboardUtils
 import com.github.jing332.alistflutter.utils.ToastUtils.toast
 import com.github.jing332.pigeon.GeneratedApi
+import com.github.jing332.utils.NativeLib
 import io.xlist.R
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import splitties.systemservices.powerManager
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.concurrent.TimeUnit
+import kotlin.math.log
 
 class AListService : Service() {
     companion object {
@@ -68,6 +84,7 @@ class AListService : Service() {
     }
 
     private val mScope = CoroutineScope(Job())
+    private val viewModelScope = CoroutineScope(Dispatchers.Main)
     private val mNotificationReceiver = NotificationActionReceiver()
     private var mWakeLock: PowerManager.WakeLock? = null
     private var mLocalAddress: String = ""
@@ -122,36 +139,49 @@ class AListService : Service() {
 
 
     private fun startOrShutdown() {
-        if (isRunning) {
-            AList.shutdown()
-        } else {
-            toast(getString(R.string.starting))
-            isRunning = true
-            AList.init(object : Event {
-                override fun onShutdown(p0: String) {
-                    Log.d(TAG, "onShutdown: $p0")
-                    // if (!AList.isRunning()) {
-                    isRunning = false
-                    notifyStatusChanged(EVENT_TYPE_SHUTDOWN)
-                    // }
-                }
+        viewModelScope.launch {
+            if (isRunning) {
+                AList.shutdown()
+            } else {
+                toast(getString(R.string.starting))
+                AList.init(object : Event {
+                    override fun onShutdown(p0: String) {
+                        Log.d(TAG, "onShutdown: $p0")
+                        // if (!AList.isRunning()) {
+                        isRunning = false
+                        notifyStatusChanged(EVENT_TYPE_SHUTDOWN)
+                        // }
+                    }
 
-                override fun onStartError(type: String, msg: String) {
+                    override fun onStartError(type: String, msg: String) {
+                        isRunning = false
+                        Log.e(TAG, "onStartError: $type, $msg")
+                        Logger.log(LogLevel.FATAL, type, msg)
+                        notifyStatusChanged(EVENT_TYPE_START_ERROR)
+                    }
+
+                    override fun onProcessExit(code: Long) {
+                        isRunning = false
+                        Log.e(TAG, "onProcessExit")
+                        // Logger.log(LogLevel.FATAL, type, "onProcessExit")
+                        notifyStatusChanged(EVENT_TYPE_PROCESS_EXIT)
+                    }
+                })
+                AList.startup()
+                try {
+                    delay(1000)
+                    val host = NativeLib.getLocalIp()// AList.getOutboundIPString()
+                    val port = AList.getHttpPort()
+                    val data = fetchUrlWithRetry("http://${host}:${port}/ping")
+                    Log.e(TAG, data ?: "--------")
+                    isRunning = true
+                    notifyStatusChanged(EVENT_TYPE_STARTUP)
+                } catch (e: Exception) {
+                    Log.e(TAG, "onStartError", e)
                     isRunning = false
-                    Log.e(TAG, "onStartError: $type, $msg")
-                    Logger.log(LogLevel.FATAL, type, msg)
                     notifyStatusChanged(EVENT_TYPE_START_ERROR)
                 }
-
-                override fun onProcessExit(code: Long) {
-                    isRunning = false
-                    Log.e(TAG, "onProcessExit")
-                    // Logger.log(LogLevel.FATAL, type, "onProcessExit")
-                    notifyStatusChanged(EVENT_TYPE_PROCESS_EXIT)
-                }
-            })
-            AList.startup()
-            notifyStatusChanged(EVENT_TYPE_STARTUP)
+            }
         }
     }
 
@@ -246,4 +276,45 @@ class AListService : Service() {
         }
     }
 
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(15, TimeUnit.SECONDS)
+        .readTimeout(15, TimeUnit.SECONDS)
+        .writeTimeout(15, TimeUnit.SECONDS)
+        .build()
+
+    private suspend fun fetchUrl(url: String): String? = withContext(Dispatchers.IO) {
+        val request = Request.Builder()
+            .url(url)
+            .build()
+
+        try {
+            val response = client.newCall(request).execute()
+            if (!response.isSuccessful) {
+                println("Unexpected code $response")
+                throw IOException("Unexpected code $response")
+            }
+            response.body?.string()
+        } catch (e: Exception) {
+            println("Error: ${e.message}")
+            e.printStackTrace()
+            null
+        }
+    }
+
+    private suspend fun fetchUrlWithRetry(url: String, maxRetries: Int = 3): String? = withContext(Dispatchers.IO) {
+        var retries = 0
+        while (retries < maxRetries) {
+            try {
+                return@withContext fetchUrl(url)
+            } catch (e: Exception) {
+                println("Error: ${e.message}")
+                retries++
+            }
+        }
+        null
+    }
 }
+
+
+
+

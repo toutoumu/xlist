@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:xlist/pages/alist/alist/alist.dart';
+import 'package:xlist/pages/alist/alist_info/view.dart';
 import 'package:xlist/pages/alist/settings/settings.dart';
 
 import 'package:xlist/pages/file/index.dart';
@@ -22,6 +23,7 @@ import 'package:xlist/pages/setting/favorite/index.dart';
 import 'package:xlist/pages/setting/download/index.dart';
 
 import 'package:xlist/routes/middlewares/auth_middleware.dart';
+
 part 'app_routes.dart';
 
 class AppPages {
@@ -91,24 +93,25 @@ class AppPages {
       transition: Transition.downToUp,
       middlewares: [AuthMiddleware()],
     ),
-
+    // AList
     GetPage(
-      name: _Paths.LOG,
-      page: () => AListScreen(),
-      binding: AudioPlayerBinding(),
+      name: _Paths.ALIST,
+      page: () => const AListInfoPage(),
+      binding: SettingBinding(),
+      children: [
+        GetPage(
+          name: _Paths.LOG,
+          page: () => const AListLog(),
+          binding: AudioPlayerBinding(),
+        ),
+      ],
     ),
-
     // 设置页面
     GetPage(
       name: _Paths.SETTING,
       page: () => SettingPage(),
       binding: SettingBinding(),
       children: [
-        GetPage(
-          name: _Paths.ALIST,
-          page: () => SettingsScreen(),
-          binding: ServerBinding(),
-        ),
         GetPage(
           name: _Paths.SERVER,
           page: () => ServerPage(),

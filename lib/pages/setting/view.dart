@@ -152,7 +152,7 @@ class SettingPage extends GetView<SettingController> {
                     _buildListTile(
                       title: "Log",
                       icon: Icons.star_rounded,
-                      onTap: () => Get.toNamed(Routes.LOG),
+                      onTap: () => Get.toNamed(Routes.ALIST),
                     ),
                     _buildListTile(
                       title: S.of(context).appName,

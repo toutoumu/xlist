@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -31,25 +32,28 @@ class _PwdEditDialogState extends State<PwdEditDialog>
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
+    return CupertinoAlertDialog(
       title: const Text("修改admin密码"),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: pwdController,
-            decoration: const InputDecoration(
-              labelText: "admin密码",
+      content: Padding(
+        padding: const EdgeInsets.only(top: 16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CupertinoTextField(
+              controller: pwdController,
+              placeholder: "admin密码",
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       actions: [
         TextButton(
-          onPressed: () {Get.back();},
+          onPressed: () {
+            Get.back();
+          },
           child: const Text("取消"),
         ),
-        FilledButton(
+        TextButton(
           onPressed: () {
             Get.back();
             widget.onConfirm(pwdController.text);

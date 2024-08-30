@@ -16,11 +16,13 @@ abstract class Routes {
   static const IMAGE_PREVIEW = _Paths.IMAGE_PREVIEW;
   static const VIDEO_PLAYER = _Paths.VIDEO_PLAYER;
   static const AUDIO_PLAYER = _Paths.AUDIO_PLAYER;
-  static const LOG = _Paths.LOG;// Alist运行日志
+
+  static const ALIST = _Paths.ALIST; // AList 首页
+  static const LOG = _Paths.ALIST + _Paths.LOG; // AList运行日志
+  static const SETTING_ALIST = _Paths.ALIST + _Paths.SETTING;
 
   // Settings
   static const SETTING = _Paths.SETTING;
-  static const SETTING_ALIST = _Paths.SETTING + _Paths.ALIST;
   static const SETTING_SERVER = _Paths.SETTING + _Paths.SERVER;
   static const SETTING_DOWNLOAD = _Paths.SETTING + _Paths.DOWNLOAD;
   static const SETTING_ABOUT = _Paths.SETTING + _Paths.ABOUT;
@@ -45,10 +47,12 @@ abstract class _Paths {
   static const IMAGE_PREVIEW = '/image/preview';
   static const VIDEO_PLAYER = '/video/player';
   static const AUDIO_PLAYER = '/audio/player';
+
+  // aList
+  static const ALIST = '/alist';
   static const LOG = '/log';
 
   // Settings
-  static const ALIST = '/alist';
   static const SETTING = '/setting';
   static const SERVER = '/server';
   static const DOWNLOAD = '/download';
