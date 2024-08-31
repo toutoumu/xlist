@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:xlist/pages/alist/alist/alist_controller.dart';
 
@@ -25,6 +26,9 @@ class Global {
   static Future<void> init() async {
     // Init FlutterBinding
     WidgetsFlutterBinding.ensureInitialized();
+
+    // Necessary initialization for package:media_kit.
+    MediaKit.ensureInitialized();
 
     // HttpOverrides
     HttpOverrides.global = XlistHttpOverrides();
