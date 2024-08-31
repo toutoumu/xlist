@@ -12,6 +12,18 @@ class Themes {
     splashColor: Colors.transparent,
     highlightColor: Colors.transparent,
     splashFactory: NoSplash.splashFactory,
+    cupertinoOverrideTheme: CupertinoThemeData(
+      textTheme: CupertinoTextThemeData(),
+    ),
+    // 启用侧滑返回
+    platform: TargetPlatform.iOS,
+    // 转场动画
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      },
+    ),
   );
 
   // Dark
@@ -25,6 +37,15 @@ class Themes {
     splashFactory: NoSplash.splashFactory,
     cupertinoOverrideTheme: CupertinoThemeData(
       textTheme: CupertinoTextThemeData(),
+    ),
+    // 启用侧滑返回
+    platform: TargetPlatform.iOS,
+    // 转场动画
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      },
     ),
   );
 }
