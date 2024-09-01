@@ -37,6 +37,8 @@ class ObjectHelper {
         () => DetailPage(tag: tag, previousPageTitle: '返回'),
         routeName: '${Routes.DETAIL}${tag}',
         arguments: {'path': path, 'name': name},
+        transition: Transition.native,
+        popGesture: true,
       );
       return;
     }

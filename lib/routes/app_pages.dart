@@ -22,6 +22,8 @@ import 'package:xlist/pages/setting/server/index.dart';
 import 'package:xlist/pages/setting/preview/index.dart';
 import 'package:xlist/pages/setting/favorite/index.dart';
 import 'package:xlist/pages/setting/download/index.dart';
+import 'package:xlist/pages/video_player_media_kit/binding.dart';
+import 'package:xlist/pages/video_player_media_kit/view.dart';
 
 import 'package:xlist/routes/middlewares/auth_middleware.dart';
 
@@ -84,6 +86,8 @@ class AppPages {
       name: _Paths.VIDEO_PLAYER,
       page: () => VideoPlayerPage(),
       binding: VideoPlayerBinding(),
+      // page: () => VideoPlayerMediaKitPage(),
+      // binding: VideoPlayerMediaKitBinding(),
       middlewares: [AuthMiddleware()],
     ),
     GetPage(
