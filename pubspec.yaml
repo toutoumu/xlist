@@ -11,8 +11,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_localizations:
-    sdk: flutter
   cupertino_icons: ^1.0.2
 
   fijkplayer:
@@ -130,5 +128,3 @@ flutter:
     - assets/
     - assets/common/
     - assets/images/
-flutter_intl:
-  enabled: true

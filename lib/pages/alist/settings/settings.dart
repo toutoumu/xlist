@@ -8,7 +8,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:xlist/common/utils.dart';
-import 'package:xlist/generated/l10n.dart';
 import 'package:xlist/generated_api.dart';
 import 'package:xlist/pages/alist/alist/alist_controller.dart';
 import 'package:xlist/pages/alist/widgets/pwd_edit_dialog.dart';
@@ -65,8 +64,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           additionalDividerMargin: 30,
           children: [
             _buildListTile(
-              title: S.of(context).wakeLock,
-              subtitle: Text(S.of(context).wakeLockDesc),
+              title: 'wakeLock'.tr,
+              subtitle: Text('wakeLockDesc'.tr),
               icon: Icons.screen_lock_portrait,
               trailing: CupertinoSwitch(
                   value: controller.wakeLock,
@@ -75,8 +74,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   }),
             ),
             _buildListTile(
-              title: S.of(context).bootAutoStartService,
-              subtitle: Text(S.of(context).bootAutoStartServiceDesc),
+              title: 'bootAutoStartService'.tr,
+              subtitle: Text('bootAutoStartServiceDesc'.tr),
               icon: Icons.power_settings_new,
               trailing: CupertinoSwitch(
                   value: controller.startAtBoot,
@@ -85,21 +84,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   }),
             ),
             _buildListTile(
-              title: S.of(context).dataDirectory,
+              title: 'dataDirectory'.tr,
               subtitle: Text(controller._dataDir.value),
               icon: Icons.folder,
               onTap: () async {
                 final path = await FilePicker.platform.getDirectoryPath();
                 if (path == null) {
                   Get.showSnackbar(GetSnackBar(
-                      message: S.current.setDefaultDirectory,
+                      message: 'setDefaultDirectory'.tr,
                       duration: const Duration(seconds: 3),
                       mainButton: TextButton(
                         onPressed: () {
                           controller.setDataDir("");
                           Get.back();
                         },
-                        child: Text(S.current.confirm),
+                        child: Text('confirm'.tr),
                       )));
                 } else {
                   controller.setDataDir(path);
@@ -119,15 +118,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
           visible: !controller._managerStorageGranted.value ||
               !controller._notificationGranted.value ||
               !controller._storageGranted.value,
-          child: DividerPreference(title: S.of(context).importantSettings),
+          child: DividerPreference(title: 'importantSettings'.tr),
         ),
 
         // 所有文件访问权限 >= Android 11 (api 30)
         Visibility(
           visible: !controller._managerStorageGranted.value,
           child: BasicPreference(
-            title: S.of(context).grantManagerStoragePermission,
-            subtitle: S.of(context).grantStoragePermissionDesc,
+            title: 'grantManagerStoragePermission'.tr,
+            subtitle: 'grantStoragePermissionDesc'.tr,
             onTap: () {
               Permission.manageExternalStorage.request();
             },
@@ -138,8 +137,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         Visibility(
             visible: !controller._storageGranted.value,
             child: BasicPreference(
-              title: S.of(context).grantStoragePermission,
-              subtitle: S.of(context).grantStoragePermissionDesc,
+              title: 'grantStoragePermission'.tr,
+              subtitle: 'grantStoragePermissionDesc'.tr,
               onTap: () {
                 Permission.storage.request();
               },
@@ -149,19 +148,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
         Visibility(
             visible: !controller._notificationGranted.value,
             child: BasicPreference(
-              title: S.of(context).grantNotificationPermission,
-              subtitle: S.of(context).grantNotificationPermissionDesc,
+              title: 'grantNotificationPermission'.tr,
+              subtitle: 'grantNotificationPermissionDesc'.tr,
               onTap: () {
                 Permission.notification.request();
               },
             )),
 
-        DividerPreference(title: S.of(context).general),
+        DividerPreference(title: 'general'.tr),
 
         // 自动检查更新
         SwitchPreference(
-          title: S.of(context).autoCheckForUpdates,
-          subtitle: S.of(context).autoCheckForUpdatesDesc,
+          title: 'autoCheckForUpdates'.tr,
+          subtitle: 'autoCheckForUpdatesDesc'.tr,
           icon: const Icon(Icons.system_update),
           value: controller.autoUpdate,
           onChanged: (value) {
@@ -171,8 +170,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
         // 唤醒屏幕
         SwitchPreference(
-          title: S.of(context).wakeLock,
-          subtitle: S.of(context).wakeLockDesc,
+          title: 'wakeLock'.tr,
+          subtitle: 'wakeLockDesc'.tr,
           icon: const Icon(Icons.screen_lock_portrait),
           value: controller.wakeLock,
           onChanged: (value) {
@@ -182,8 +181,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
         // 开机自启动服务
         SwitchPreference(
-          title: S.of(context).bootAutoStartService,
-          subtitle: S.of(context).bootAutoStartServiceDesc,
+          title: 'bootAutoStartService'.tr,
+          subtitle: 'bootAutoStartServiceDesc'.tr,
           icon: const Icon(Icons.power_settings_new),
           value: controller.startAtBoot,
           onChanged: (value) {
@@ -193,8 +192,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
         // 将网页设置为打开首页
         SwitchPreference(
-          title: S.of(context).autoStartWebPage,
-          subtitle: S.of(context).autoStartWebPageDesc,
+          title: 'autoStartWebPage'.tr,
+          subtitle: 'autoStartWebPageDesc'.tr,
           icon: const Icon(Icons.open_in_browser),
           value: controller._autoStartWebPage.value,
           onChanged: (value) {
@@ -204,21 +203,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
         // AList data 文件夹路径
         BasicPreference(
-          title: S.of(context).dataDirectory,
+          title: 'dataDirectory'.tr,
           subtitle: controller._dataDir.value,
           leading: const Icon(Icons.folder),
           onTap: () async {
             final path = await FilePicker.platform.getDirectoryPath();
             if (path == null) {
               Get.showSnackbar(GetSnackBar(
-                  message: S.current.setDefaultDirectory,
+                  message: 'setDefaultDirectory'.tr,
                   duration: const Duration(seconds: 3),
                   mainButton: TextButton(
                     onPressed: () {
                       controller.setDataDir("");
                       Get.back();
                     },
-                    child: Text(S.current.confirm),
+                    child: Text('confirm'.tr),
                   )));
             } else {
               controller.setDataDir(path);
@@ -226,11 +225,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           },
         ),
 
-        DividerPreference(title: S.of(context).general),
+        DividerPreference(title: 'general'.tr),
         // 将网页设置为打开首页
         SwitchPreference(
-          title: S.of(context).autoStartWebPage,
-          subtitle: S.of(context).autoStartWebPageDesc,
+          title: 'autoStartWebPage'.tr,
+          subtitle: 'autoStartWebPageDesc'.tr,
           icon: const Icon(Icons.open_in_browser),
           value: aListController.isRunning.value,
           onChanged: (value) {
@@ -255,7 +254,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 builder: (context) => PwdEditDialog(
                       onConfirm: (pwd) {
                         Get.showSnackbar(GetSnackBar(
-                            title: S.current.setAdminPassword,
+                            title: 'setAdminPassword'.tr,
                             message: pwd,
                             duration: const Duration(seconds: 1)));
                         Android().setAdminPwd(pwd);
@@ -273,12 +272,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
 
         // 界面
-        DividerPreference(title: S.of(context).uiSettings),
+        DividerPreference(title: 'uiSettings'.tr),
         // 静默跳转APP
         SwitchPreference(
             icon: const Icon(Icons.pan_tool_alt_outlined),
-            title: S.of(context).silentJumpApp,
-            subtitle: S.of(context).silentJumpAppDesc,
+            title: 'silentJumpApp'.tr,
+            subtitle: 'silentJumpAppDesc'.tr,
             value: controller._silentJumpApp.value,
             onChanged: (value) {
               controller.silentJumpApp = value;

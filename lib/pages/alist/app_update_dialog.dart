@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:xlist/generated/l10n.dart';
+import 'package:get/get.dart';
+import 'package:get/get_common/get_reset.dart';
 
 import 'utils/intent_utils.dart';
 import 'utils/update_checker.dart';
@@ -50,25 +51,25 @@ class AppUpdateDialog extends StatelessWidget {
       ]),
       actions: <Widget>[
         TextButton(
-          child: Text(S.of(context).cancel),
+          child: Text('cancel'.tr),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         TextButton(
-          child: Text(S.of(context).releasePage),
+          child: Text('releasePage'.tr),
           onPressed: () {
             Navigator.pop(context);
             IntentUtils.getUrlIntent(htmlUrl)
-                .launchChooser(S.of(context).releasePage);
+                .launchChooser('releasePage'.tr);
           },
         ),
         TextButton(
-          child: Text(S.of(context).downloadApk),
+          child: Text('downloadApk'.tr),
           onPressed: () {
             Navigator.pop(context);
             IntentUtils.getUrlIntent(apkUrl)
-                .launchChooser(S.of(context).downloadApk);
+                .launchChooser('downloadApk'.tr);
           },
         ),
       ],

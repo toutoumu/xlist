@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:xlist/common/utils.dart';
-import 'package:xlist/generated/l10n.dart';
 import 'package:xlist/generated_api.dart';
 import 'package:xlist/pages/alist/alist/about_dialog.dart';
 import 'package:xlist/pages/alist/alist/alist_controller.dart';
@@ -91,20 +90,20 @@ class _AListLogPageState extends State<AListLogPage> {
         title: Obx(() => Text("AList - ${ui.aListVersion.value}")),
         actions: [
           IconButton(
-            tooltip: S.of(context).desktopShortcut,
+            tooltip: 'desktopShortcut'.tr,
             onPressed: () async {
               Android().addShortcut();
             },
             icon: const Icon(Icons.add_home),
           ),
           IconButton(
-            tooltip: S.current.setAdminPassword,
+            tooltip: 'setAdminPassword'.tr,
             onPressed: () {
               showDialog(
                   context: context,
                   builder: (context) => PwdEditDialog(onConfirm: (pwd) {
                         Get.showSnackbar(GetSnackBar(
-                            title: S.current.setAdminPassword,
+                            title: 'setAdminPassword'.tr,
                             message: pwd,
                             duration: const Duration(seconds: 1)));
                         Android().setAdminPwd(pwd);
@@ -113,7 +112,7 @@ class _AListLogPageState extends State<AListLogPage> {
             icon: const Icon(Icons.password),
           ),
           PopupMenuButton(
-            tooltip: S.of(context).moreOptions,
+            tooltip: 'moreOptions'.tr,
             itemBuilder: (context) {
               return [
                 PopupMenuItem(
@@ -122,12 +121,12 @@ class _AListLogPageState extends State<AListLogPage> {
                     AppUpdateDialog.checkUpdateAndShowDialog(context, (b) {
                       if (!b) {
                         Get.showSnackbar(GetSnackBar(
-                            message: S.of(context).currentIsLatestVersion,
+                            message: 'currentIsLatestVersion'.tr,
                             duration: const Duration(seconds: 2)));
                       }
                     });
                   },
-                  child: Text(S.of(context).checkForUpdates),
+                  child: Text('checkForUpdates'.tr),
                 ),
                 PopupMenuItem(
                   value: 2,
@@ -138,7 +137,7 @@ class _AListLogPageState extends State<AListLogPage> {
                           return const AppAboutDialog();
                         }));
                   },
-                  child: Text(S.of(context).about),
+                  child: Text('about'.tr),
                 ),
               ];
             },

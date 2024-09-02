@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:xlist/generated/l10n.dart';
 import 'package:xlist/generated_api.dart';
 import 'package:xlist/pages/alist/contant/native_bridge.dart';
 import 'package:xlist/pages/alist/utils/intent_utils.dart';
@@ -44,7 +43,7 @@ class _AppAboutDialogState extends State<AppAboutDialog> {
     final appUrl =
         "https://github.com/jing332/AListFlutter/releases/tag/$_version";
     return AboutDialog(
-      applicationName: S.of(context).appName,
+      applicationName: 'appName'.tr,
       applicationVersion: '$_version ($_versionCode)',
       applicationIcon: SvgPicture.asset(
         "assets/alist.svg",
@@ -59,7 +58,7 @@ class _AppAboutDialogState extends State<AppAboutDialog> {
           onLongPress: () {
             Clipboard.setData(ClipboardData(text: alistUrl));
             Get.showSnackbar(GetSnackBar(
-                message: S.of(context).copiedToClipboard,
+                message: 'copiedToClipboard'.tr,
                 duration: const Duration(seconds: 1)));
           },
           child: const Text("AList"),
@@ -71,7 +70,7 @@ class _AppAboutDialogState extends State<AppAboutDialog> {
             onLongPress: () {
               Clipboard.setData(ClipboardData(text: appUrl));
               Get.showSnackbar(GetSnackBar(
-                  message: S.of(context).copiedToClipboard,
+                  message: 'copiedToClipboard'.tr,
                   duration: const Duration(seconds: 1)));
             },
             child: const Text("AListFlutter")),

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:xlist/common/utils.dart';
-import 'package:xlist/generated/l10n.dart';
 import 'package:xlist/pages/alist/alist/alist_controller.dart';
 import 'package:xlist/pages/alist/widgets/pwd_edit_dialog.dart';
 import 'package:xlist/routes/app_pages.dart';
@@ -90,7 +89,7 @@ class _AListInfoPageState extends State<AListInfoPage> {
                                   password: aListController.adminPassword.value,
                                   onConfirm: (pwd) {
                                     Get.showSnackbar(GetSnackBar(
-                                        title: S.current.setAdminPassword,
+                                        title: 'setAdminPassword'.tr,
                                         message: pwd,
                                         duration: const Duration(seconds: 1)));
                                     aListController.updateAdminPassword(pwd);

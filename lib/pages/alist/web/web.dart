@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
-import 'package:xlist/generated/l10n.dart';
 import 'package:xlist/generated_api.dart';
 import 'package:xlist/pages/alist/contant/native_bridge.dart';
 
@@ -43,7 +42,9 @@ class WebScreenState extends State<WebScreen> {
 
   @override
   void initState() {
-    Android().getAListHttpPort().then((port) => {_url = "http://localhost:$port"});
+    Android()
+        .getAListHttpPort()
+        .then((port) => {_url = "http://localhost:$port"});
 
     // NativeEvent().addServiceStatusListener((isRunning) {
     //   if (isRunning) _webViewController?.reload();
@@ -95,20 +96,29 @@ class WebScreenState extends State<WebScreen> {
                 log("shouldOverrideUrlLoading ${navigationAction.request.url}");
 
                 var uri = navigationAction.request.url!;
-                if (!["http", "https", "file", "chrome", "data", "javascript", "about"].contains(uri.scheme)) {
+                if (![
+                  "http",
+                  "https",
+                  "file",
+                  "chrome",
+                  "data",
+                  "javascript",
+                  "about"
+                ].contains(uri.scheme)) {
                   log("shouldOverrideUrlLoading ${uri.toString()}");
-                  final silentMode = await NativeBridge.appConfig.isSilentJumpAppEnabled();
+                  final silentMode =
+                      await NativeBridge.appConfig.isSilentJumpAppEnabled();
                   if (silentMode) {
                     NativeCommon().startActivityFromUri(uri.toString());
                   } else {
                     Get.showSnackbar(GetSnackBar(
-                        message: S.current.jumpToOtherApp,
+                        message: 'jumpToOtherApp'.tr,
                         duration: const Duration(seconds: 5),
                         mainButton: TextButton(
                           onPressed: () {
                             NativeCommon().startActivityFromUri(uri.toString());
                           },
-                          child: Text(S.current.goTo),
+                          child: Text('goTo'.tr),
                         )));
                   }
 
@@ -126,7 +136,8 @@ class WebScreenState extends State<WebScreen> {
                     await Future.delayed(const Duration(milliseconds: 500));
                     if (await Android().isRunning()) {
                       // _webViewController?.reload();
-                      _webViewController?.loadUrl(urlRequest: URLRequest(url: WebUri(_url)));
+                      _webViewController?.loadUrl(
+                          urlRequest: URLRequest(url: WebUri(_url)));
                       break;
                     }
                   }
@@ -134,28 +145,31 @@ class WebScreenState extends State<WebScreen> {
               },
               onDownloadStartRequest: (controller, url) async {
                 Get.showSnackbar(GetSnackBar(
-                  title: S.of(context).downloadThisFile,
-                  message: url.suggestedFilename ?? url.contentDisposition ?? url.toString(),
+                  title: 'downloadThisFile'.tr,
+                  message: url.suggestedFilename ??
+                      url.contentDisposition ??
+                      url.toString(),
                   duration: const Duration(seconds: 3),
                   mainButton: Column(children: [
                     TextButton(
                       onPressed: () {
-                        IntentUtils.getUrlIntent(url.url.toString()).launchChooser(S.of(context).selectAppToOpen);
+                        IntentUtils.getUrlIntent(url.url.toString())
+                            .launchChooser('selectAppToOpen'.tr);
                       },
-                      child: Text(S.of(context).selectAppToOpen),
+                      child: Text('selectAppToOpen'.tr),
                     ),
                     TextButton(
                       onPressed: () {
                         IntentUtils.getUrlIntent(url.url.toString()).launch();
                       },
-                      child: Text(S.of(context).download),
+                      child: Text('download'.tr),
                     ),
                   ]),
                   onTap: (_) {
                     Clipboard.setData(ClipboardData(text: url.url.toString()));
                     Get.closeCurrentSnackbar();
                     Get.showSnackbar(GetSnackBar(
-                      message: S.of(context).copiedToClipboard,
+                      message: 'copiedToClipboard'.tr,
                       duration: const Duration(seconds: 1),
                     ));
                   },
@@ -166,7 +180,8 @@ class WebScreenState extends State<WebScreen> {
                   _progress = 0;
                 });
               },
-              onProgressChanged: (InAppWebViewController controller, int progress) {
+              onProgressChanged:
+                  (InAppWebViewController controller, int progress) {
                 setState(() {
                   _progress = progress / 100;
                   if (_progress == 1) _progress = 0;
@@ -175,7 +190,8 @@ class WebScreenState extends State<WebScreen> {
                       _canGoBack = value;
                     }));
               },
-              onUpdateVisitedHistory: (InAppWebViewController controller, WebUri? url, bool? isReload) {
+              onUpdateVisitedHistory: (InAppWebViewController controller,
+                  WebUri? url, bool? isReload) {
                 _url = url.toString();
               },
             ),

@@ -6,7 +6,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:xlist/common/index.dart';
-import 'package:xlist/generated/l10n.dart';
 import 'package:xlist/storages/index.dart';
 import 'package:xlist/routes/app_pages.dart';
 import 'package:xlist/pages/setting/index.dart';
@@ -80,7 +79,7 @@ class SettingPage extends GetView<SettingController> {
     // 自动启动Alist
     final autoStart = [
       _buildListTile(
-        title: S.of(context).bootAutoStartService,
+        title: 'bootAutoStartService'.tr,
         icon: Icons.perm_media_rounded,
         trailing: Obx(
           () => CupertinoSwitch(
@@ -150,7 +149,7 @@ class SettingPage extends GetView<SettingController> {
                   ),
                   children: [
                     _buildListTile(
-                      title: S.of(context).appName,
+                      title: 'appName'.tr,
                       icon: Icons.storage_rounded,
                       onTap: () => Get.toNamed(Routes.ALIST),
                     ),
