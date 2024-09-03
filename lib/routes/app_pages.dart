@@ -84,10 +84,10 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.VIDEO_PLAYER,
-      page: () => VideoPlayerPage(),
-      binding: VideoPlayerBinding(),
-      // page: () => VideoPlayerMediaKitPage(),
-      // binding: VideoPlayerMediaKitBinding(),
+      // page: () => VideoPlayerPage(),
+      // binding: VideoPlayerBinding(),
+      page: () => VideoPlayerMediaKitPage(),
+      binding: VideoPlayerMediaKitBinding(),
       middlewares: [AuthMiddleware()],
     ),
     GetPage(

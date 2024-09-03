@@ -78,9 +78,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!--打开这个会导致视频无法渲染画面-->
         <meta-data
             android:name="io.flutter.embedding.android.EnableImpeller"
-            android:value="true" />
+            android:value="false" />
 
         <provider
             android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"
