@@ -100,7 +100,8 @@ class VideoPlayerMediaKitController extends SuperController {
         httpHeaders.value =
             DriverHelper.getHeaders(object.value.provider, object.value.rawUrl);
         _initListener();
-        _startPlay([object.value]);
+        // _startPlay([object.value]);
+        _startPlay(objects);
       } catch (e) {
         SmartDialog.showToast('toast_get_object_fail'.tr);
         return;
@@ -316,12 +317,13 @@ class VideoPlayerMediaKitController extends SuperController {
     });*/
     videoPlayer.stream.tracks.listen((event) async {
       // 内置字幕
-      timedTextTracks.value = event.subtitle;
+      timedTextTracks.value = event.subtitle.where((o) {
+        return o.id != 'auto' && o.id != 'no';
+      }).toList();
       // 内置音频
-      audioTracks.value = event.audio;
-
-      // todo 这个自动设置不起作用
-      await videoController.player.setSubtitleTrack(SubtitleTrack.auto());
+      audioTracks.value = event.audio.where((o) {
+        return o.id != 'auto' && o.id != 'no';
+      }).toList();
     });
     /*// 视频长度监听
     _player.stream.duration.listen((event) {
@@ -343,22 +345,26 @@ class VideoPlayerMediaKitController extends SuperController {
     }
     // 组织播放列表
     var playList = <Media>[];
-    objects.forEach((element) async {
-      // element = await ObjectRepository.get(path: '$path$name');
-      var url = element.rawUrl;
-      if (url != null) {
-        if (element.provider == "BaiduNetdisk") {
-          playList.add(Media(url,
-              httpHeaders: {HttpHeaders.userAgentHeader: "pan.baidu.com"}));
-        } else {
-          playList.add(Media(url));
-        }
+    // objects.forEach((element) async {
+    //   var object = await ObjectRepository.get(path: '$path${element.name}');
+    //   var httpHeaders = DriverHelper.getHeaders(object.provider, object.rawUrl);
+    //   if (object.rawUrl != null) {
+    //     playList.add(Media(object.rawUrl!, httpHeaders: httpHeaders));
+    //   }
+    // });
+
+    for (var element in objects) {
+      var object = await ObjectRepository.get(path: '$path${element.name}');
+      var httpHeaders = DriverHelper.getHeaders(object.provider, object.rawUrl);
+      if (object.rawUrl != null) {
+        playList.add(Media(object.rawUrl!, httpHeaders: httpHeaders));
       }
-    });
+    }
     // 播放
-    // final playable = Playlist(playList, index: currentIndex.value);
-    final playable = Playlist(playList, index: 0);
+    final playable = Playlist(playList, index: currentIndex.value);
+    // final playable = Playlist(playList, index: 0);
     // _player.setSubtitleTrack(SubtitleTrack.auto());
+    // await videoController.player.setSubtitleTrack(SubtitleTrack.auto());
     await videoPlayer.open(playable);
   }
 
@@ -389,11 +395,18 @@ class VideoPlayerMediaKitController extends SuperController {
     audioTracks.clear();
     timedTextTracks.clear();
 
+    videoPlayer.jump(index);
     // 获取字幕文件名列表
     updateSubtitleNameList(object.value.related ?? []);
 
     // 重置播放器信息
     SmartDialog.dismiss();
+
+    currentPos.value = Duration.zero;
+    await updateProgress(); // 更新播放进度
+    // 加入最近浏览
+    await CommonUtils.addRecent(object.value, path, _object.name!);
+    SmartDialog.showToast('toast_switch_success'.tr);
     // player.reset().then((value) async {
     //   currentPos.value = Duration.zero;
     //   await updateProgress(); // 更新播放进度
