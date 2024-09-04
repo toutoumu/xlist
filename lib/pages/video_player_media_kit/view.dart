@@ -367,7 +367,7 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
     }
 
     // 文件大小
-    final filesize = CommonUtils.formatFileSize(controller.object.value.size!);
+    final filesize = CommonUtils.formatFileSize(controller.currentObject.value.size!);
 
     // 文件类型
     final fileType = p
@@ -376,13 +376,13 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
         .toUpperCase();
 
     // 格式化时间
-    final modified = controller.object.value.modified == null
+    final modified = controller.currentObject.value.modified == null
         ? '-'
-        : Jiffy.parseFromDateTime(controller.object.value.modified!)
+        : Jiffy.parseFromDateTime(controller.currentObject.value.modified!)
             .format(pattern: 'yyyy/MM/dd');
 
     // 挂载类型
-    final provider = controller.object.value.provider ?? '-';
+    final provider = controller.currentObject.value.provider ?? '-';
 
     // 是否是横屏
     final isLandscape =
@@ -490,7 +490,7 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
         ],
         onToggle: (index) {
           controller.playMode.val = index!;
-          controller.changeLoop(index);
+          controller.changePlayMode(index);
         },
       ),
     );
@@ -576,7 +576,7 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
   }
 
   Widget _buildPageInfo(BuildContext context) {
-    if (controller.object.value.rawUrl == null) {
+    if (controller.currentObject.value.rawUrl == null) {
       return const Center(child: CupertinoActivityIndicator());
     }
 

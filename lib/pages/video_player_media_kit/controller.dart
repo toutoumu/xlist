@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:adaptive_dialog/adaptive_dialog.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
@@ -11,7 +10,6 @@ import 'package:path/path.dart' as p;
 import 'package:subtitle_wrapper_package/subtitle_wrapper_package.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:xlist/common/utils.dart';
-import 'package:xlist/constants/common.dart';
 import 'package:xlist/database/entity/index.dart';
 import 'package:xlist/helper/index.dart';
 import 'package:xlist/models/index.dart';
@@ -20,25 +18,26 @@ import 'package:xlist/services/index.dart';
 import 'package:xlist/storages/index.dart';
 
 class VideoPlayerMediaKitController extends SuperController {
-  final object = ObjectModel().obs;
   final userInfo = UserModel().obs; // 用户信息
   final httpHeaders = <String, String>{}.obs;
   final serverId = Get.find<UserStorage>().serverId.val.obs;
   final isLoading = true.obs; // 是否正在加载
   final isAutoPaused = false.obs; // 是否自动暂停
-  final subtitles = <Subtitle>[].obs; // 字幕
-  final subtitleNameList = <String>[].obs; // 外置字幕文件名列表
-  final subtitleName = ''.obs; // 当前字幕文件名
-  final audioTracks = <AudioTrack>[].obs; // 音轨
+
+  final showTimedText = true.obs; // 是否显示字幕
+  final subtitles = <Subtitle>[].obs; // ??字幕
   final timedTextTracks = <SubtitleTrack>[].obs; // 内置字幕
-  final showTimedText = true.obs; // 是否显示内置字幕
+  final subtitleNameList = <String>[].obs; // 外置字幕文件名列表
+
+  final audioTracks = <AudioTrack>[].obs; // 音轨
+
+  final subtitleName = ''.obs; // 当前字幕文件名
+  final currentObject = ObjectModel().obs; // 当前播放文件
   final currentName = ''.obs; // 当前播放文件名
   final currentIndex = 0.obs; // 当前播放文件下标
+
   final showPlaylist = false.obs; // 是否显示播放列表
   final thumbnail = ''.obs; // 视频缩略图
-
-  late final videoPlayer = Player();
-  late final videoController = VideoController(videoPlayer);
 
   // 自动播放
   final isAutoPlay = Get.find<PreferencesStorage>().isAutoPlay.val;
@@ -58,10 +57,14 @@ class VideoPlayerMediaKitController extends SuperController {
   final String file = Get.arguments['file'] ?? '';
   final int downloadId = Get.arguments['downloadId'] ?? 0;
 
-  int _progressId = 0; // 进度表 ID
+  // 用于记录视频播放进度
+  int _progressId = 0; // 进记录 ID
+  int _currentPos = 0; // 当前播放进度
+  int _duration = 0; // 视频长度
 
-  int _currentPos = 0;
-  int _duration = 0;
+  // 播放器
+  late final videoPlayer = Player();
+  late final videoController = VideoController(videoPlayer);
 
   @override
   void onInit() async {
@@ -76,43 +79,42 @@ class VideoPlayerMediaKitController extends SuperController {
     currentIndex.value = objects.indexWhere((o) => o.name == name); // 当前播放文件下标
     showPlaylist.value = objects.length > 1; // 是否显示播放列表
 
-    // 获取视频播放地址
-    if (file.isEmpty) {
-      try {
-        object.value = await ObjectRepository.get(path: '$path$name');
-        httpHeaders.value =
-            DriverHelper.getHeaders(object.value.provider, object.value.rawUrl);
-      } catch (e) {
-        SmartDialog.showToast('toast_get_object_fail'.tr);
-        return;
-      }
-    } else {
-      final download = await DatabaseService.to.database.downloadDao
-          .findDownloadById(downloadId);
-      object.value = ObjectModel.fromJson({
-        'name': download?.name,
-        'type': download?.type,
-        'size': download?.size,
-        'raw_url': 'file://$file',
-      });
-
-      // 尝试更新一下字幕
-      ObjectRepository.get(path: '$path$name').then((value) {
-        updateSubtitleNameList(value.related ?? []);
-      });
-    }
-
-    // 获取同级目录下的字幕
-    updateSubtitleNameList(object.value.related ?? []);
-    thumbnail.value = object.value.thumb ?? '';
-
     // 获取服务器 id
     if (Get.arguments['serverId'] != null) {
       serverId.value = Get.arguments['serverId'] ?? 0;
     }
 
-    // 更新本地播放进度
-    await updateProgress();
+    // 获取视频播放地址
+    try {
+      if (file.isEmpty) {
+        // 网盘文件
+        currentObject.value = await ObjectRepository.get(path: '$path$name');
+        // 获取同级目录下的字幕
+        _updateSubtitleNameList(currentObject.value.related ?? []);
+        thumbnail.value = currentObject.value.thumb ?? '';
+      } else {
+        // 本地下载的文件
+        final download = await DatabaseService.to.database.downloadDao
+            .findDownloadById(downloadId);
+        currentObject.value = ObjectModel.fromJson({
+          'name': download?.name,
+          'type': download?.type,
+          'size': download?.size,
+          'raw_url': 'file://$file',
+        });
+
+        // 获取同级目录下的字幕
+        var value = await ObjectRepository.get(path: '$path$name');
+        _updateSubtitleNameList(value.related ?? []);
+        thumbnail.value = value.thumb ?? '';
+      }
+    } catch (e) {
+      SmartDialog.showToast('toast_get_object_fail'.tr);
+      return;
+    }
+
+    // 获取当前播放文件的播放记录
+    await _getViewingRecord();
 
     // 初始化播放器
     _initListener();
@@ -120,14 +122,15 @@ class VideoPlayerMediaKitController extends SuperController {
       _startPlay(objects);
     } else {
       // 本地文件
-      _startPlay([object.value]);
+      _startPlay([currentObject.value]);
     }
 
     // 加入最近浏览
-    await CommonUtils.addRecent(object.value, path, name);
+    await CommonUtils.addRecent(currentObject.value, path, name);
 
     // 绑定进度监听
     DownloadService.to.bindBackgroundIsolate((id, status, progress) {});
+
     isLoading.value = false; // 加载完成
   }
 
@@ -135,9 +138,9 @@ class VideoPlayerMediaKitController extends SuperController {
   void _initListener() {
     videoPlayer.stream.playing.listen((plaing) {
       if (plaing) {
-        startTimer();
+        _startTimer();
       } else {
-        _timer?.cancel();
+        _stopTimer();
       }
     });
     // 当前视频播放完成监听
@@ -148,7 +151,7 @@ class VideoPlayerMediaKitController extends SuperController {
       // 播放完成
       print('播放完成: $_progressId');
 
-      _timer?.cancel();
+      _stopTimer();
       // 更新播放进度 - 重置
       await _saveViewingRecord(0, _duration);
     });
@@ -212,8 +215,8 @@ class VideoPlayerMediaKitController extends SuperController {
   /// 切换播放列表文件
   /// [index] 下标
   Future changePlaylist(int index) async {
-    final _object = objects[index];
-    if (_object.name == currentName.value) {
+    final newObject = objects[index];
+    if (newObject.name == currentName.value) {
       SmartDialog.showToast('toast_current_play_file'.tr);
       return;
     }
@@ -221,7 +224,8 @@ class VideoPlayerMediaKitController extends SuperController {
     // 获取视频播放地址
     SmartDialog.showLoading();
     try {
-      object.value = await ObjectRepository.get(path: '$path${_object.name}');
+      currentObject.value =
+          await ObjectRepository.get(path: '$path${newObject.name}');
     } catch (e) {
       SmartDialog.dismiss();
       SmartDialog.showToast(e.toString());
@@ -230,7 +234,7 @@ class VideoPlayerMediaKitController extends SuperController {
 
     // 更新初始化信息
     currentIndex.value = index;
-    currentName.value = _object.name!;
+    currentName.value = newObject.name!;
     isAutoPaused.value = false;
     subtitles.clear();
     audioTracks.clear();
@@ -238,15 +242,15 @@ class VideoPlayerMediaKitController extends SuperController {
     subtitleNameList.clear();
 
     // 获取字幕文件名列表
-    updateSubtitleNameList(object.value.related ?? []);
+    _updateSubtitleNameList(currentObject.value.related ?? []);
 
     // 重置播放器信息
     SmartDialog.dismiss();
 
-    await updateProgress(); // 更新播放进度
+    await _getViewingRecord(); // 更新播放进度
 
     // 加入最近浏览
-    await CommonUtils.addRecent(object.value, path, _object.name!);
+    await CommonUtils.addRecent(currentObject.value, path, newObject.name!);
 
     SmartDialog.showToast('toast_switch_success'.tr);
   }
@@ -268,23 +272,12 @@ class VideoPlayerMediaKitController extends SuperController {
     );
 
     if (value != null) {
-      var item = audioTracks.indexWhere((element) {
+      var itemIndex = audioTracks.indexWhere((element) {
         return element.id == value;
       });
-      await videoController.player.setAudioTrack(audioTracks[item]);
+      await videoController.player.setAudioTrack(audioTracks[itemIndex]);
       // SmartDialog.showToast('toast_current_audio_track'.tr);
       SmartDialog.showToast('toast_switch_success'.tr);
-    }
-  }
-
-  /// 更新字幕文件名列表
-  void updateSubtitleNameList(List<ObjectModel> related) {
-    subtitleNameList.clear();
-    for (var v in related) {
-      final ext = p.extension(v.name!).toLowerCase();
-      if (ext == '.vtt' || ext == '.srt' || ext == '.ass') {
-        subtitleNameList.add(v.name!);
-      }
     }
   }
 
@@ -329,13 +322,11 @@ class VideoPlayerMediaKitController extends SuperController {
 
     // 切换内置字幕
     if (value.startsWith('internal::')) {
-      // videoController.player.subtitleTrack = SubtitleTrack.auto();
-      final _value = value.replaceAll('internal::', '');
-
-      var item = timedTextTracks.indexWhere((element) {
-        return element.id == _value;
+      final itemId = value.replaceAll('internal::', '');
+      var itemIndex = timedTextTracks.indexWhere((element) {
+        return element.id == itemId;
       });
-      await videoController.player.setSubtitleTrack(timedTextTracks[item]);
+      await videoController.player.setSubtitleTrack(timedTextTracks[itemIndex]);
       // SmartDialog.showToast('toast_current_subtitle'.tr);
       SmartDialog.showToast('toast_switch_success'.tr);
       showTimedText.value = true; // 显示字幕
@@ -411,31 +402,13 @@ class VideoPlayerMediaKitController extends SuperController {
     }
   }
 
-  /// 更新本地播放进度
-  Future<void> updateProgress() async {
-    final progress = await DatabaseService.to.database.progressDao
-        .findProgressByServerIdAndPath(serverId.value, path, currentName.value);
-
-    if (progress != null) {
-      _progressId = progress.id!;
-      _currentPos = progress.currentPos;
-    } else {
-      _currentPos = 0;
-      _progressId =
-          await DatabaseService.to.database.progressDao.insertProgress(
-        ProgressEntity(
-          serverId: serverId.value,
-          path: path,
-          name: currentName.value,
-          currentPos: 0,
-        ),
-      );
-    }
-  }
-
   /// 收藏
   void favorite() async {
-    await CommonUtils.addFavorite(object.value, path, currentName.value);
+    await CommonUtils.addFavorite(
+      currentObject.value,
+      path,
+      currentName.value,
+    );
   }
 
   /// 复制链接
@@ -443,7 +416,7 @@ class VideoPlayerMediaKitController extends SuperController {
     Clipboard.setData(ClipboardData(
       text: CommonUtils.getDownloadLink(
         path,
-        object: object.value,
+        object: currentObject.value,
         userInfo: userInfo.value,
       ),
     ));
@@ -453,11 +426,32 @@ class VideoPlayerMediaKitController extends SuperController {
   /// 下载文件
   void download() async {
     DownloadHelper.file(
-        path, currentName.value, object.value.type!, object.value.size!);
+      path,
+      currentName.value,
+      currentObject.value.type!,
+      currentObject.value.size!,
+    );
+  }
+
+  /// 修改播放模式
+  void changePlayMode(int index) {
+    // static const LIST_LOOP = 0;
+    // static const SINGLE_LOOP = 1;
+    // static const PLAY_PAUSE = 2;
+    // static const SHUFFLE = 3;
+    switch (index) {
+      case 0:
+        videoPlayer.setPlaylistMode(PlaylistMode.loop); // 列表循环
+      case 1:
+        videoPlayer.setPlaylistMode(PlaylistMode.single); // 单个循环
+      default:
+        videoPlayer.setPlaylistMode(PlaylistMode.none); // 列表播一次
+    }
   }
 
   @override
   void onPaused() {
+    // 播放中且配置不允许后台播放才暂停
     if (videoPlayer.state.playing && !isBackgroundPlay) {
       isAutoPaused.value = true;
       videoPlayer.pause();
@@ -483,10 +477,61 @@ class VideoPlayerMediaKitController extends SuperController {
   void onClose() {
     super.onClose();
     videoPlayer.dispose();
-    _timer?.cancel();
+    _stopTimer();
 
     DownloadService.to.unbindBackgroundIsolate();
     WakelockPlus.disable();
+  }
+
+  /// 更新外挂字幕文件名列表
+  void _updateSubtitleNameList(List<ObjectModel> related) {
+    subtitleNameList.clear();
+    for (var v in related) {
+      final ext = p.extension(v.name!).toLowerCase();
+      if (ext == '.vtt' || ext == '.srt' || ext == '.ass') {
+        subtitleNameList.add(v.name!);
+      }
+    }
+  }
+
+  Timer? _timer;
+
+  /// 定时器,定时更新播放进度
+  void _startTimer() async {
+    // 每五秒记录一下播放进度
+    print('开始记录播放进度');
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+      print('每五秒记录一下播放进度: $_currentPos');
+      await _saveViewingRecord(_currentPos, _duration);
+    });
+  }
+
+  /// 停止定时器
+  void _stopTimer() async {
+    _timer?.cancel();
+    _timer = null;
+    print('停止记录播放进度');
+  }
+
+  /// 获取播放记录(ID)
+  Future<void> _getViewingRecord() async {
+    final progress = await DatabaseService.to.database.progressDao
+        .findProgressByServerIdAndPath(serverId.value, path, currentName.value);
+
+    if (progress != null) {
+      _progressId = progress.id!;
+      return;
+    }
+    // 如果不存在则插入, 返回自增ID
+    _progressId = await DatabaseService.to.database.progressDao.insertProgress(
+      ProgressEntity(
+        serverId: serverId.value,
+        path: path,
+        name: currentName.value,
+        currentPos: 0,
+      ),
+    );
   }
 
   /// 保存播放位置
@@ -500,38 +545,5 @@ class VideoPlayerMediaKitController extends SuperController {
         currentPos: currentPos,
       ),
     );
-  }
-
-  /// 删除播放记录
-  void _deleteViewingRecord() {
-    print('删除播放记录');
-  }
-
-  /// 修改播放模式
-  void changeLoop(int index) {
-    // static const LIST_LOOP = 0;
-    // static const SINGLE_LOOP = 1;
-    // static const PLAY_PAUSE = 2;
-    // static const SHUFFLE = 3;
-    switch (index) {
-      case 0:
-        videoPlayer.setPlaylistMode(PlaylistMode.loop); // 列表循环
-      case 1:
-        videoPlayer.setPlaylistMode(PlaylistMode.single); // 单个循环
-      default:
-        videoPlayer.setPlaylistMode(PlaylistMode.none); // 列表播一次
-    }
-  }
-
-  Timer? _timer;
-
-  void startTimer() async {
-    // 每五秒记录一下播放进度
-    print('开始记录播放进度');
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
-      print('每五秒记录一下播放进度: $_currentPos');
-      await _saveViewingRecord(_currentPos, _duration);
-    });
   }
 }
