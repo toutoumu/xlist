@@ -116,7 +116,7 @@ class AboutPage extends GetView<AboutController> {
                     child: Assets.common.logoTransparent.image(width: 600.w)),
                 _buildInfo(),
                 Expanded(child: Container()),
-                Obx(() => _buildCopyRight()),
+                _buildCopyRight(),
               ],
             );
           } else {
@@ -127,7 +127,7 @@ class AboutPage extends GetView<AboutController> {
                     child: Assets.common.logoTransparent.image(width: 300.w)),
                 _buildInfo(),
                 Expanded(child: Container()),
-                Obx(() => _buildCopyRight()),
+                _buildCopyRight(),
               ],
             );
           }
