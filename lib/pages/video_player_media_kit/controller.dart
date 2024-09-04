@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:path/path.dart' as p;
-import 'package:subtitle_wrapper_package/subtitle_wrapper_package.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:xlist/common/utils.dart';
 import 'package:xlist/database/entity/index.dart';
@@ -24,8 +23,6 @@ class VideoPlayerMediaKitController extends SuperController {
   final isLoading = true.obs; // 是否正在加载
   final isAutoPaused = false.obs; // 是否自动暂停
 
-  final showTimedText = true.obs; // 是否显示字幕
-  final subtitles = <Subtitle>[].obs; // ??字幕
   final timedTextTracks = <SubtitleTrack>[].obs; // 内置字幕
   final subtitleNameList = <String>[].obs; // 外置字幕文件名列表
 
@@ -236,7 +233,6 @@ class VideoPlayerMediaKitController extends SuperController {
     currentIndex.value = index;
     currentName.value = newObject.name!;
     isAutoPaused.value = false;
-    subtitles.clear();
     audioTracks.clear();
     timedTextTracks.clear();
     subtitleNameList.clear();
@@ -312,9 +308,6 @@ class VideoPlayerMediaKitController extends SuperController {
 
     // 关闭字幕
     if (value == 'close') {
-      showTimedText.value = false;
-      subtitles.value = [];
-      subtitles.refresh();
       await videoController.player.setSubtitleTrack(SubtitleTrack.no());
       SmartDialog.showToast('toast_subtitle_closed'.tr);
       return;
@@ -329,70 +322,16 @@ class VideoPlayerMediaKitController extends SuperController {
       await videoController.player.setSubtitleTrack(timedTextTracks[itemIndex]);
       // SmartDialog.showToast('toast_current_subtitle'.tr);
       SmartDialog.showToast('toast_switch_success'.tr);
-      showTimedText.value = true; // 显示字幕
       return;
     }
 
     // 外挂字幕
     try {
       SmartDialog.showLoading(msg: 'toast_switch_loading'.tr);
-      await videoController.player.setSubtitleTrack(SubtitleTrack.uri(
-        '$path$value',
-        title: 'English',
-        language: 'en',
-      ));
 
-      // final _object = await ObjectRepository.get(path: '$path$value');
-      // final response = await DioService.to.dio.get(
-      //   _object.rawUrl!,
-      //   options: Options(
-      //     headers: httpHeaders,
-      //     responseDecoder: (List<int> responseBytes, RequestOptions options,
-      //         ResponseBody responseBody) {
-      //       String _data = '';
-      //       try {
-      //         _data = hasUtf32Bom(responseBytes)
-      //             ? utf32.decode(responseBytes)
-      //             : (hasUtf16Bom(responseBytes)
-      //                 ? utf16.decode(responseBytes)
-      //                 : utf8.decode(responseBytes));
-      //       } catch (e) {
-      //         _data = gbk.decode(responseBytes);
-      //       }
-      //       return _data;
-      //     },
-      //   ),
-      // );
-      //
-      // // 获取文件后缀
-      // final ext = p.extension(value).toLowerCase();
-      //
-      // // ass 单独处理
-      // if (ext == '.ass') {
-      //   showTimedText.value = false;
-      //   subtitles.value = await CommonUtils.ass2srt(response.data);
-      //   subtitles.refresh();
-      //
-      //   SmartDialog.dismiss();
-      //   SmartDialog.showToast('toast_switch_success'.tr);
-      //   return;
-      // }
-      //
-      // // 字幕类型
-      // final subtitleType =
-      //     ext == '.vtt' ? SubtitleType.webvtt : SubtitleType.srt;
-      //
-      // // 解析字幕文件
-      // final data = await SubtitleDataRepository(
-      //   subtitleController: SubtitleController(
-      //     subtitlesContent: response.data,
-      //     subtitleType: subtitleType,
-      //   ),
-      // ).getSubtitles();
-      //
-      // showTimedText.value = false;
-      // subtitles.value = data.subtitles;
-      // subtitles.refresh();
+      final outSubtitleObject = await ObjectRepository.get(path: '$path$value');
+      final subtitle = SubtitleTrack.uri(outSubtitleObject.rawUrl ?? '');
+      await videoController.player.setSubtitleTrack(subtitle);
 
       SmartDialog.dismiss();
       SmartDialog.showToast('toast_switch_success'.tr);
