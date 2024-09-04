@@ -11,7 +11,9 @@ import 'logic.dart';
 
 /// AList 当前状态信息
 class AListInfoPage extends StatefulWidget {
-  const AListInfoPage({super.key});
+  final bool showNavIcon;
+
+  const AListInfoPage({super.key, this.showNavIcon = true});
 
   @override
   State<AListInfoPage> createState() {
@@ -163,7 +165,10 @@ class _AListInfoPageState extends State<AListInfoPage> {
     return CupertinoNavigationBar(
         backgroundColor: Get.theme.scaffoldBackgroundColor,
         border: Border.all(width: 0, color: Colors.transparent),
-        leading: CommonUtils.backButton,
+        leading: Visibility(
+          visible: widget.showNavIcon,
+          child: CommonUtils.backButton,
+        ),
         middle: const Text(
           "AList",
           maxLines: 1,

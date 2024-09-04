@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:xlist/routes/app_pages.dart';
 
 import 'app_theme.dart';
 
@@ -31,24 +33,36 @@ class _HomeDrawerState extends State<HomeDrawer> {
     drawerList = <DrawerList>[
       DrawerList(
         index: DrawerIndex.home,
-        labelName: 'Home',
+        labelName: 'Home'.tr,
         icon: const Icon(Icons.home),
       ),
       DrawerList(
-        index: DrawerIndex.help,
-        labelName: 'Help',
-        isAssetsImage: true,
-        imageName: 'assets/images/supportIcon.png',
+        index: DrawerIndex.favorite,
+        labelName: 'favorite'.tr,
+        // isAssetsImage: true,
+        icon: const Icon(Icons.star_rounded),
       ),
       DrawerList(
-        index: DrawerIndex.feedback,
-        labelName: 'Feedback',
-        icon: const Icon(Icons.help),
+        index: DrawerIndex.history,
+        labelName: 'recent'.tr,
+        // isAssetsImage: true,
+        icon: const Icon(Icons.history_rounded),
       ),
       DrawerList(
-        index: DrawerIndex.invite,
-        labelName: 'Invite Friend',
-        icon: const Icon(Icons.group),
+        index: DrawerIndex.download,
+        labelName: 'download_manager'.tr,
+        icon: const Icon(Icons.download_rounded),
+      ),
+      DrawerList(
+        index: DrawerIndex.alist,
+        labelName: 'appName'.tr,
+        icon: const Icon(Icons.storage_rounded),
+      ),
+      DrawerList(
+        index: DrawerIndex.server,
+        labelName: 'server'.tr,
+        // isAssetsImage: true,
+        icon: const Icon(Icons.cloud),
       ),
       DrawerList(
         index: DrawerIndex.about,
@@ -102,7 +116,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                             child: ClipRRect(
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(60.0)),
-                              child: Image.asset('assets/images/userImage.png'),
+                              child: Image.asset('assets/common/logo.jpg'),
                             ),
                           ),
                         ),
@@ -151,9 +165,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
                 color: Colors.transparent,
                 child: InkWell(
                   child: ListTile(
-                    title: const Text(
-                      'Sign Out',
-                      style: TextStyle(
+                    title: Text(
+                      'setting'.tr,
+                      style: const TextStyle(
                         fontFamily: AppTheme.fontName,
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
@@ -162,10 +176,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       textAlign: TextAlign.left,
                     ),
                     trailing: const Icon(
-                      Icons.power_settings_new,
+                      Icons.settings,
                       color: Colors.red,
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      Get.toNamed(Routes.SETTING);
+                    },
                   ),
                 ),
               ),
@@ -283,7 +299,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
   }
 }
 
-enum DrawerIndex { home, help, feedback, invite, about }
+enum DrawerIndex { home, alist, server, favorite, history, download, about }
 
 class DrawerList {
   DrawerList({

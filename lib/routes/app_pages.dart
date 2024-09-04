@@ -5,6 +5,7 @@ import 'package:xlist/pages/alist/log/view.dart';
 import 'package:xlist/pages/alist/settings/settings.dart';
 
 import 'package:xlist/pages/file/index.dart';
+import 'package:xlist/pages/main_page/view.dart';
 import 'package:xlist/pages/splash/index.dart';
 import 'package:xlist/pages/detail/index.dart';
 import 'package:xlist/pages/search/index.dart';
@@ -37,9 +38,15 @@ class AppPages {
   static final routes = [
     unknownRoute,
     GetPage(name: _Paths.SPLASH, page: () => SplashPage()),
-    GetPage(
+    /*GetPage(
       name: _Paths.HOMEPAGE,
       page: () => Homepage(),
+      binding: HomepageBinding(),
+      transitionDuration: Duration.zero,
+    ),*/
+    GetPage(
+      name: _Paths.HOMEPAGE,
+      page: () => MainPage(),
       binding: HomepageBinding(),
       transitionDuration: Duration.zero,
     ),

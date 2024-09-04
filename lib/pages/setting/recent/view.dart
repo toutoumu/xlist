@@ -14,14 +14,19 @@ import 'package:xlist/database/entity/index.dart';
 import 'package:xlist/pages/setting/recent/index.dart';
 
 class RecentPage extends GetView<RecentController> {
-  const RecentPage({Key? key}) : super(key: key);
+  final bool showNavIcon;
+
+  const RecentPage({super.key, this.showNavIcon = true});
 
   // NavigationBar
   CupertinoNavigationBar _buildNavigationBar() {
     return CupertinoNavigationBar(
       backgroundColor: CommonUtils.backgroundColor,
       border: Border.all(width: 0, color: Colors.transparent),
-      leading: CommonUtils.backButton,
+      leading: Visibility(
+        visible: showNavIcon,
+        child: CommonUtils.backButton,
+      ),
       middle: Text('setting_recent_title'.tr),
       trailing: CupertinoButton(
         padding: EdgeInsets.zero,

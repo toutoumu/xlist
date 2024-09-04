@@ -17,7 +17,9 @@ import 'package:xlist/database/entity/index.dart';
 import 'package:xlist/services/browser_service.dart';
 
 class Homepage extends GetView<HomepageController> {
-  const Homepage({Key? key}) : super(key: key);
+  final bool showNavIcon;
+
+  const Homepage({super.key, this.showNavIcon = true});
 
   /// NavigationBar
   Widget _buildSliverNavigationBar() {
@@ -28,14 +30,18 @@ class Homepage extends GetView<HomepageController> {
       leading: CupertinoButton(
         padding: EdgeInsets.zero,
         alignment: Alignment.centerLeft,
-        child: Container(
-          width: 190.w,
-          child: Row(
-            children: [
-              Icon(CupertinoIcons.umbrella_fill, size: CommonUtils.navIconSize),
-              SizedBox(width: 15.w),
-              // Text('设置', style: TextStyle(fontSize: 50.sp)),
-            ],
+        child: Visibility(
+          visible: showNavIcon,
+          child: SizedBox(
+            width: 190.w,
+            child: Row(
+              children: [
+                Icon(CupertinoIcons.umbrella_fill,
+                    size: CommonUtils.navIconSize),
+                SizedBox(width: 15.w),
+                // Text('设置', style: TextStyle(fontSize: 50.sp)),
+              ],
+            ),
           ),
         ),
         onPressed: () => Get.toNamed(Routes.SETTING)

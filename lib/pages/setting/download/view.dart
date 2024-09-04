@@ -13,14 +13,19 @@ import 'package:xlist/constants/index.dart';
 import 'package:xlist/pages/setting/download/index.dart';
 
 class DownloadPage extends GetView<DownloadController> {
-  const DownloadPage({Key? key}) : super(key: key);
+  final bool showNavIcon;
+
+  const DownloadPage({super.key, this.showNavIcon = true});
 
   // NavigationBar
   CupertinoNavigationBar _buildNavigationBar() {
     return CupertinoNavigationBar(
       backgroundColor: CommonUtils.backgroundColor,
       border: Border.all(width: 0, color: Colors.transparent),
-      leading: CommonUtils.backButton,
+      leading: Visibility(
+        visible: showNavIcon,
+        child: CommonUtils.backButton,
+      ),
       middle: Text('download_manager'.tr),
     );
   }

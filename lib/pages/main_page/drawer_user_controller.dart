@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'app_theme.dart';
@@ -5,6 +6,7 @@ import 'home_drawer.dart';
 
 class DrawerUserController extends StatefulWidget {
   const DrawerUserController({
+    super.key,
     required this.onDrawerCall,
     required this.screenView,
     this.menuView,
@@ -12,7 +14,6 @@ class DrawerUserController extends StatefulWidget {
     this.animatedIconData = AnimatedIcons.arrow_menu,
     this.drawerWidth = 250,
     this.screenIndex = DrawerIndex.home,
-    super.key,
   });
 
   final double drawerWidth;
@@ -170,16 +171,21 @@ class _DrawerUserControllerState extends State<DrawerUserController>
                       // this just menu and arrow icon animation
                       Padding(
                         padding: EdgeInsets.only(
-                            top: MediaQuery.of(context).padding.top + 8,
-                            left: 8),
+                            top: MediaQuery.of(context).padding.top, left: 8),
                         child: SizedBox(
-                          width: AppBar().preferredSize.height - 8,
-                          height: AppBar().preferredSize.height - 8,
+                          width: const CupertinoNavigationBar()
+                              .preferredSize
+                              .height,
+                          height: const CupertinoNavigationBar()
+                              .preferredSize
+                              .height,
                           child: Material(
                             color: Colors.transparent,
                             child: InkWell(
                               borderRadius: BorderRadius.circular(
-                                  AppBar().preferredSize.height),
+                                  const CupertinoNavigationBar()
+                                      .preferredSize
+                                      .height),
                               onTap: () {
                                 FocusScope.of(context)
                                     .requestFocus(FocusNode());

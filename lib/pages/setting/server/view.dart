@@ -16,14 +16,19 @@ import 'package:xlist/pages/setting/server/index.dart';
 import 'package:xlist/components/bottom_sheet/add_server_bottom_sheet.dart';
 
 class ServerPage extends GetView<ServerController> {
-  const ServerPage({Key? key}) : super(key: key);
+  final bool showNavIcon;
+
+  const ServerPage({Key? key, this.showNavIcon = true}) : super(key: key);
 
   // NavigationBar
   CupertinoNavigationBar _buildNavigationBar() {
     return CupertinoNavigationBar(
       backgroundColor: CommonUtils.backgroundColor,
       border: Border.all(width: 0, color: Colors.transparent),
-      leading: CommonUtils.backButton,
+      leading: Visibility(
+        visible: showNavIcon,
+        child: CommonUtils.backButton,
+      ),
       middle: Text('server'.tr),
       trailing: CupertinoButton(
         padding: EdgeInsets.zero,

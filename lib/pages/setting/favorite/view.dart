@@ -14,14 +14,19 @@ import 'package:xlist/database/entity/index.dart';
 import 'package:xlist/pages/setting/favorite/index.dart';
 
 class FavoritePage extends GetView<FavoriteController> {
-  const FavoritePage({Key? key}) : super(key: key);
+  final bool showNavIcon;
+
+  const FavoritePage({Key? key, this.showNavIcon = true}) : super(key: key);
 
   // NavigationBar
   CupertinoNavigationBar _buildNavigationBar() {
     return CupertinoNavigationBar(
       backgroundColor: CommonUtils.backgroundColor,
       border: Border.all(width: 0, color: Colors.transparent),
-      leading: CommonUtils.backButton,
+      leading: Visibility(
+        visible: showNavIcon,
+        child: CommonUtils.backButton,
+      ),
       middle: Text('favorite'.tr),
       trailing: CupertinoButton(
         padding: EdgeInsets.zero,
