@@ -1,11 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 
 import 'package:adaptive_dialog/adaptive_dialog.dart';
-import 'package:audio_service/audio_service.dart';
-import 'package:charset/charset.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
@@ -40,7 +35,6 @@ class VideoPlayerMediaKitController extends SuperController {
   final currentName = ''.obs; // 当前播放文件名
   final currentIndex = 0.obs; // 当前播放文件下标
   final showPlaylist = false.obs; // 是否显示播放列表
-  final fijkViewKey = GlobalKey(); // 播放器 key
   final thumbnail = ''.obs; // 视频缩略图
 
   late final videoPlayer = Player();
@@ -64,15 +58,10 @@ class VideoPlayerMediaKitController extends SuperController {
   final String file = Get.arguments['file'] ?? '';
   final int downloadId = Get.arguments['downloadId'] ?? 0;
 
-  // 初始化播放器
-  // final FijkPlayer player = FijkPlayer();
-  // final audioHandler = PlayerNotificationService.to.audioHandler;
-
-  Timer? _timer;
   int _progressId = 0; // 进度表 ID
-  final currentPos = Duration.zero.obs;
-  StreamSubscription? _currentPosSubs;
-  MediaItem? _mediaItem;
+
+  int _currentPos = 0;
+  int _duration = 0;
 
   @override
   void onInit() async {
@@ -87,21 +76,12 @@ class VideoPlayerMediaKitController extends SuperController {
     currentIndex.value = objects.indexWhere((o) => o.name == name); // 当前播放文件下标
     showPlaylist.value = objects.length > 1; // 是否显示播放列表
 
-    // PlayerNotificationService
-    /*audioHandler.initializeStreamController(player, showPlaylist.value, true);
-    audioHandler.playbackState.addStream(audioHandler.streamController.stream);
-    audioHandler.setVideoFunctions(
-        player.start, player.pause, player.seekTo, player.stop);*/
-
     // 获取视频播放地址
     if (file.isEmpty) {
       try {
         object.value = await ObjectRepository.get(path: '$path$name');
         httpHeaders.value =
             DriverHelper.getHeaders(object.value.provider, object.value.rawUrl);
-        _initListener();
-        // _startPlay([object.value]);
-        _startPlay(objects);
       } catch (e) {
         SmartDialog.showToast('toast_get_object_fail'.tr);
         return;
@@ -122,7 +102,7 @@ class VideoPlayerMediaKitController extends SuperController {
       });
     }
 
-    // 获取字幕文件名列表
+    // 获取同级目录下的字幕
     updateSubtitleNameList(object.value.related ?? []);
     thumbnail.value = object.value.thumb ?? '';
 
@@ -131,22 +111,17 @@ class VideoPlayerMediaKitController extends SuperController {
       serverId.value = Get.arguments['serverId'] ?? 0;
     }
 
-    // 更新播放进度
+    // 更新本地播放进度
     await updateProgress();
 
     // 初始化播放器
-    /*await FijkHelper.setFijkOption(player, headers: httpHeaders);
-    await player.setOption(FijkOption.playerCategory, 'seek-at-start',
-        currentPos.value.inMilliseconds);
-    await player.setDataSource(object.value.rawUrl ?? '', autoPlay: isAutoPlay);
-
-    // Listener
-    player.addListener(_fijkValueListener);*/
-
-    // 监听播放进度
-    /*_currentPosSubs = player.onCurrentPosUpdate.listen((v) {
-      currentPos.value = v;
-    });*/
+    _initListener();
+    if (objects.isNotEmpty) {
+      _startPlay(objects);
+    } else {
+      // 本地文件
+      _startPlay([object.value]);
+    }
 
     // 加入最近浏览
     await CommonUtils.addRecent(object.value, path, name);
@@ -156,165 +131,43 @@ class VideoPlayerMediaKitController extends SuperController {
     isLoading.value = false; // 加载完成
   }
 
-  /// todo 切到后台, 播放其他 app 声音源再暂停, 再切回来, 会自动播放, 但是声音消失了
-  // void _fijkValueListener() async {
-  //   FijkValue value = player.value;
-  //
-  //   // Android 有些情况下会拿不到播放时间, 特殊处理一下
-  //   if (_mediaItem != null && _mediaItem!.duration != value.duration) {
-  //     _playerNotificationHandler();
-  //   }
-  //
-  //   // 屏幕常亮切换
-  //   if (value.state == FijkState.started) WakelockPlus.enable();
-  //   if (value.state == FijkState.paused) WakelockPlus.disable();
-  //
-  //   // 播放预加载完成
-  //   if (value.state == FijkState.prepared) {
-  //     if (value.duration.inMilliseconds > 0) _playerNotificationHandler();
-  //     final trackInfo = await player.getTrackInfo(); // 获取音轨信息
-  //     final _audioTracks = <Map<String, String>>[];
-  //     final _timedTextTracks = <Map<String, String>>[];
-  //     for (var index = 0; index < trackInfo.length; index++) {
-  //       final track = trackInfo[index];
-  //       if (track['type'] == IjkPlayerTrackType.AUDIO) {
-  //         _audioTracks.add({
-  //           'index': index.toString(),
-  //           'title': CommonUtils.formatIjkTrack(track['title']),
-  //           'language': track['language'],
-  //           'info': track['info'],
-  //         });
-  //       } else if (track['type'] == IjkPlayerTrackType.TIMEDTEXT) {
-  //         _timedTextTracks.add({
-  //           'index': index.toString(),
-  //           'title': CommonUtils.formatIjkTrack(track['title']),
-  //           'language': track['language'],
-  //           'info': track['info'],
-  //         });
-  //       }
-  //     }
-  //     audioTracks.value = _audioTracks;
-  //     timedTextTracks.value = _timedTextTracks;
-  //   }
-  //
-  //   // 播放完成
-  //   if (value.state == FijkState.completed) {
-  //     currentPos.value = Duration.zero;
-  //
-  //     // 更新播放进度 - 重置
-  //     await DatabaseService.to.database.progressDao.updateProgress(
-  //       ProgressEntity(
-  //         id: _progressId,
-  //         serverId: serverId.value,
-  //         path: path,
-  //         name: currentName.value,
-  //         currentPos: currentPos.value.inMilliseconds,
-  //       ),
-  //     );
-  //
-  //     // 列表循环
-  //     if (playMode.val == PlayMode.LIST_LOOP && showPlaylist.isTrue) {
-  //       player.seekTo(0);
-  //       currentIndex.value == objects.length - 1
-  //           ? changePlaylist(0)
-  //           : changePlaylist(currentIndex.value + 1);
-  //       return;
-  //     }
-  //
-  //     // 单集循环
-  //     if (playMode.val == PlayMode.SINGLE_LOOP && showPlaylist.isTrue) {
-  //       player.seekTo(0);
-  //       player.start();
-  //       return;
-  //     }
-  //   }
-  // }
-
-  /// 通知栏控制器
-  // void _playerNotificationHandler() {
-  //   _mediaItem = MediaItem(
-  //     id: '${path}${currentName.value}',
-  //     title: CommonUtils.formatFileNme(currentName.value),
-  //     duration: player.value.duration,
-  //     artUri: object.value.thumb != null && object.value.thumb!.isNotEmpty
-  //         ? Uri.parse(object.value.thumb!)
-  //         : Uri.parse('https://s2.loli.net/2023/07/05/viCwFoLceMtAB3m.jpg'),
-  //     artHeaders: httpHeaders,
-  //   );
-  //
-  //   // Add media
-  //   audioHandler.mediaItem.add(_mediaItem);
-  // }
-
   // 初始视频状态化监听
   void _initListener() {
-    videoPlayer.stream.completed.listen((event) async {
-      // 播放完成
-      currentPos.value = Duration.zero;
-
-      // 更新播放进度 - 重置
-      await DatabaseService.to.database.progressDao.updateProgress(
-        ProgressEntity(
-          id: _progressId,
-          serverId: serverId.value,
-          path: path,
-          name: currentName.value,
-          currentPos: currentPos.value.inMilliseconds,
-        ),
-      );
-
-      // // 列表循环
-      // if (playMode.val == PlayMode.LIST_LOOP && showPlaylist.isTrue) {
-      //   videoPlayer.seek(Duration.zero);
-      //   currentIndex.value == objects.length - 1
-      //       ? changePlaylist(0)
-      //       : changePlaylist(currentIndex.value + 1);
-      //   return;
-      // }
-      //
-      // // 单集循环
-      // if (playMode.val == PlayMode.SINGLE_LOOP && showPlaylist.isTrue) {
-      //   // player.seekTo(0);
-      //   // player.start();
-      //   videoPlayer.seek(Duration.zero);
-      //   return;
-      // }
-    });
-    // 视频旋转角度监听
-    /*_player.stream.videoParams.listen((event) {
-      if (event.rotate != null) {
-        if (event.rotate == 0) {
-          SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
-          SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-              overlays: [SystemUiOverlay.top]);
-        } else {
-          SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-              overlays: []);
-        }
+    videoPlayer.stream.playing.listen((plaing) {
+      if (plaing) {
+        startTimer();
+      } else {
+        _timer?.cancel();
       }
-    });*/
-
-    // 当前播放进度监听
-    videoPlayer.stream.position.listen((event) {
-      currentPos.value = event;
     });
-    /*// 当前播放进度监听
-    _player.stream.position.listen((event) {
-      // 如果视频长度未获取到那么不处理
-      if (_duration <= 0) {
+    // 当前视频播放完成监听
+    videoPlayer.stream.completed.listen((completed) async {
+      if (!completed) {
         return;
       }
-      var currentPos = event.inMilliseconds;
-      // 如果最后一秒了，删除记录
-      if (_currentPos >= _duration - 1000) {
-        _deleteViewingRecord();
-      } else if (currentPos < 10 * 1000 || (currentPos / 1000) % 10 != 0) {
-        _currentPos = currentPos;
-      } else {
-        LogUtil.e("_currentPos: $_currentPos");
-        _saveViewingRecord(currentPos, _duration);
-      }
-    });*/
+      // 播放完成
+      print('播放完成: $_progressId');
+
+      _timer?.cancel();
+      // 更新播放进度 - 重置
+      await _saveViewingRecord(0, _duration);
+    });
+    // 当前播放的视频
+    videoPlayer.stream.playlist.listen((event) async {
+      print('当前播放的视频: ${event.index}');
+      await changePlaylist(event.index);
+    });
+    // 当前播放进度监听
+    videoPlayer.stream.position.listen((event) {
+      // 如果视频长度未获取到那么不处理
+      _currentPos = event.inMilliseconds;
+    });
+    // 视频长度监听
+    videoPlayer.stream.duration.listen((event) {
+      _duration = event.inMilliseconds;
+      print('视频长度: $_duration');
+    });
+    // 音轨,字幕监听
     videoPlayer.stream.tracks.listen((event) async {
       // 内置字幕
       timedTextTracks.value = event.subtitle.where((o) {
@@ -325,52 +178,40 @@ class VideoPlayerMediaKitController extends SuperController {
         return o.id != 'auto' && o.id != 'no';
       }).toList();
     });
-    /*// 视频长度监听
-    _player.stream.duration.listen((event) {
-      _duration = event.inMilliseconds;
-      LogUtil.e("_duration: $_duration");
-    });
-    // 当前播放的视频
-    _player.stream.playlist.listen((event) {
-      _index = event.index;
-      _videoTitle.value = _videos[_index].name.substringBeforeLast(".") ?? "";
-      _fileViewingRecord(_videos[_index]);
-      _findAndCacheViewingRecord(_videos[_index]);
-    });*/
   }
 
+  /// 初始化播放文件
   void _startPlay(List<ObjectModel> objects) async {
     if (objects.isEmpty) {
       return;
     }
     // 组织播放列表
     var playList = <Media>[];
-    // objects.forEach((element) async {
-    //   var object = await ObjectRepository.get(path: '$path${element.name}');
-    //   var httpHeaders = DriverHelper.getHeaders(object.provider, object.rawUrl);
-    //   if (object.rawUrl != null) {
-    //     playList.add(Media(object.rawUrl!, httpHeaders: httpHeaders));
-    //   }
-    // });
-
+    // 注意不要用 forEach 循环，不会同步执行
     for (var element in objects) {
+      // 查询文件信息
       var object = await ObjectRepository.get(path: '$path${element.name}');
-      var httpHeaders = DriverHelper.getHeaders(object.provider, object.rawUrl);
       if (object.rawUrl != null) {
-        playList.add(Media(object.rawUrl!, httpHeaders: httpHeaders));
+        // 获取请求头
+        var httpHeaders =
+            DriverHelper.getHeaders(object.provider, object.rawUrl);
+        // 查询文件上次播放到的位置
+        final progress = await DatabaseService.to.database.progressDao
+            .findProgressByServerIdAndPath(
+                serverId.value, path, object.name ?? '');
+        var start = Duration(milliseconds: progress?.currentPos ?? 0);
+        playList
+            .add(Media(object.rawUrl!, httpHeaders: httpHeaders, start: start));
       }
     }
     // 播放
     final playable = Playlist(playList, index: currentIndex.value);
-    // final playable = Playlist(playList, index: 0);
-    // _player.setSubtitleTrack(SubtitleTrack.auto());
-    // await videoController.player.setSubtitleTrack(SubtitleTrack.auto());
-    await videoPlayer.open(playable);
+    await videoPlayer.open(playable, play: isAutoPlay);
   }
 
   /// 切换播放列表文件
   /// [index] 下标
-  void changePlaylist(int index) async {
+  Future changePlaylist(int index) async {
     final _object = objects[index];
     if (_object.name == currentName.value) {
       SmartDialog.showToast('toast_current_play_file'.tr);
@@ -378,7 +219,7 @@ class VideoPlayerMediaKitController extends SuperController {
     }
 
     // 获取视频播放地址
-    SmartDialog.showLoading(msg: "ddd");
+    SmartDialog.showLoading();
     try {
       object.value = await ObjectRepository.get(path: '$path${_object.name}');
     } catch (e) {
@@ -394,41 +235,20 @@ class VideoPlayerMediaKitController extends SuperController {
     subtitles.clear();
     audioTracks.clear();
     timedTextTracks.clear();
+    subtitleNameList.clear();
 
-    videoPlayer.jump(index);
     // 获取字幕文件名列表
     updateSubtitleNameList(object.value.related ?? []);
 
     // 重置播放器信息
     SmartDialog.dismiss();
 
-    currentPos.value = Duration.zero;
     await updateProgress(); // 更新播放进度
+
     // 加入最近浏览
     await CommonUtils.addRecent(object.value, path, _object.name!);
+
     SmartDialog.showToast('toast_switch_success'.tr);
-    // player.reset().then((value) async {
-    //   currentPos.value = Duration.zero;
-    //   await updateProgress(); // 更新播放进度
-    //
-    //   // 更新封面
-    //   final _cover = PreviewHelper.isAudio(_object.name!)
-    //       ? Assets.common.logo.image()
-    //       : (_object.thumb != null && _object.thumb!.isNotEmpty)
-    //           ? Image.network(_object.thumb ?? '', headers: httpHeaders)
-    //           : null;
-    //   await player.setCover(_cover?.image);
-    //
-    //   // 初始化播放器
-    //   await FijkHelper.setFijkOption(player, headers: httpHeaders);
-    //   await player.setOption(FijkOption.playerCategory, 'seek-at-start',
-    //       currentPos.value.inMilliseconds);
-    //   await player.setDataSource(object.value.rawUrl!, autoPlay: true);
-    //
-    //   // 加入最近浏览
-    //   await CommonUtils.addRecent(object.value, path, _object.name!);
-    //   SmartDialog.showToast('toast_switch_success'.tr);
-    // });
   }
 
   /// 切换音轨
@@ -455,22 +275,6 @@ class VideoPlayerMediaKitController extends SuperController {
       // SmartDialog.showToast('toast_current_audio_track'.tr);
       SmartDialog.showToast('toast_switch_success'.tr);
     }
-
-    /*if (value != null) {
-      final track = await player.getSelectedTrack(IjkPlayerTrackType.AUDIO);
-      if (track == int.parse(value)) {
-        SmartDialog.showToast('toast_current_audio_track'.tr);
-        return;
-      }
-
-      player.pause();
-      Future.delayed(Duration(milliseconds: 500), () {
-        player.selectTrack(int.parse(value!));
-        player.seekTo(currentPos.value.inMilliseconds);
-        player.start();
-        SmartDialog.showToast('toast_switch_success'.tr);
-      });
-    }*/
   }
 
   /// 更新字幕文件名列表
@@ -614,8 +418,9 @@ class VideoPlayerMediaKitController extends SuperController {
 
     if (progress != null) {
       _progressId = progress.id!;
-      currentPos.value = Duration(milliseconds: progress.currentPos);
+      _currentPos = progress.currentPos;
     } else {
+      _currentPos = 0;
       _progressId =
           await DatabaseService.to.database.progressDao.insertProgress(
         ProgressEntity(
@@ -626,20 +431,6 @@ class VideoPlayerMediaKitController extends SuperController {
         ),
       );
     }
-
-    // 每五秒记录一下播放进度
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
-      await DatabaseService.to.database.progressDao.updateProgress(
-        ProgressEntity(
-          id: _progressId,
-          serverId: serverId.value,
-          path: path,
-          name: currentName.value,
-          currentPos: currentPos.value.inMilliseconds,
-        ),
-      );
-    });
   }
 
   /// 收藏
@@ -667,10 +458,6 @@ class VideoPlayerMediaKitController extends SuperController {
 
   @override
   void onPaused() {
-    // if (player.value.state == FijkState.started && !isBackgroundPlay) {
-    //   isAutoPaused.value = true;
-    //   player.pause();
-    // }
     if (videoPlayer.state.playing && !isBackgroundPlay) {
       isAutoPaused.value = true;
       videoPlayer.pause();
@@ -679,25 +466,8 @@ class VideoPlayerMediaKitController extends SuperController {
 
   @override
   void onResumed() {
-    // 判断大小超过 30g 的大文件
-    // final isLargeFile = object.value.size! > 30 * 1024 * 1024 * 1024;
     videoPlayer.play();
-    videoPlayer.seek(currentPos.value);
-    // // if player is started and auto paused
-    // if (player.value.state == FijkState.started && isLargeFile) {
-    //   isAutoPaused.value = true;
-    //   player.pause();
-    // }
-    //
-    // // fix player seekTo bug
-    // Future.delayed(Duration(milliseconds: 500), () async {
-    //   if (isLargeFile) await player.seekTo(currentPos.value.inMilliseconds);
-    //
-    //   if (player.value.state == FijkState.paused && isAutoPaused.isTrue) {
-    //     isAutoPaused.value = false;
-    //     player.start();
-    //   }
-    // });
+    videoPlayer.seek(Duration(milliseconds: _currentPos));
   }
 
   @override
@@ -712,17 +482,56 @@ class VideoPlayerMediaKitController extends SuperController {
   @override
   void onClose() {
     super.onClose();
-
-    _timer?.cancel();
-    _currentPosSubs?.cancel();
-    // audioHandler.streamController.add(PlaybackState());
-    // audioHandler.streamController.close();
-    // player.removeListener(_fijkValueListener);
-    // player.release();
-
     videoPlayer.dispose();
+    _timer?.cancel();
 
     DownloadService.to.unbindBackgroundIsolate();
     WakelockPlus.disable();
+  }
+
+  /// 保存播放位置
+  Future<void> _saveViewingRecord(int currentPos, int duration) async {
+    await DatabaseService.to.database.progressDao.updateProgress(
+      ProgressEntity(
+        id: _progressId,
+        serverId: serverId.value,
+        path: path,
+        name: currentName.value,
+        currentPos: currentPos,
+      ),
+    );
+  }
+
+  /// 删除播放记录
+  void _deleteViewingRecord() {
+    print('删除播放记录');
+  }
+
+  /// 修改播放模式
+  void changeLoop(int index) {
+    // static const LIST_LOOP = 0;
+    // static const SINGLE_LOOP = 1;
+    // static const PLAY_PAUSE = 2;
+    // static const SHUFFLE = 3;
+    switch (index) {
+      case 0:
+        videoPlayer.setPlaylistMode(PlaylistMode.loop); // 列表循环
+      case 1:
+        videoPlayer.setPlaylistMode(PlaylistMode.single); // 单个循环
+      default:
+        videoPlayer.setPlaylistMode(PlaylistMode.none); // 列表播一次
+    }
+  }
+
+  Timer? _timer;
+
+  void startTimer() async {
+    // 每五秒记录一下播放进度
+    print('开始记录播放进度');
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+      print('每五秒记录一下播放进度: $_currentPos');
+      await _saveViewingRecord(_currentPos, _duration);
+    });
   }
 }

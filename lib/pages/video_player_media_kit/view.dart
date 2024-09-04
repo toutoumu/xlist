@@ -458,7 +458,7 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
               trailing: index == controller.currentIndex.value
                   ? _buildPlayIcon()
                   : null,
-              onTap: () => controller.changePlaylist(index),
+              onTap: () => controller.videoPlayer.jump(index),
             ),
           ],
         );
@@ -490,6 +490,7 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
         ],
         onToggle: (index) {
           controller.playMode.val = index!;
+          controller.changeLoop(index);
         },
       ),
     );
