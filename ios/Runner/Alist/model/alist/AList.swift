@@ -56,7 +56,7 @@ class AList: NSObject, AlistlibEventProtocol, AlistlibLogCallbackProtocol {
     func startup() {
         // init()
         // self.initAlist()
-        Alistlib.AlistlibStart()
+        Alistlib.AlistlibStart(nil)
     }
     
     /**

@@ -13,18 +13,37 @@ import 'package:xlist/constants/index.dart';
 import 'package:xlist/database/entity/index.dart';
 import 'package:xlist/pages/setting/favorite/index.dart';
 
-class FavoritePage extends GetView<FavoriteController> {
+class FavoritePage extends StatefulWidget {
   final bool showNavIcon;
 
   const FavoritePage({Key? key, this.showNavIcon = true}) : super(key: key);
 
+  @override
+  State<FavoritePage> createState() => _FavoritePageState();
+}
+
+class _FavoritePageState extends State<FavoritePage>
+    with SingleTickerProviderStateMixin {
+  final FavoriteController controller = Get.find<FavoriteController>();
+
+  late final sliderController = SlidableController(this);
+
+  @override
+  void initState() {
+    super.initState();
+    sliderController.enableStartActionPane = false;
+    sliderController.enableEndActionPane = false;
+    sliderController.isLeftToRight = false;
+    sliderController.startActionPaneExtentRatio = 1;
+  }
+
   // NavigationBar
   CupertinoNavigationBar _buildNavigationBar() {
     return CupertinoNavigationBar(
-      backgroundColor: CommonUtils.backgroundColor,
+      // backgroundColor: CommonUtils.backgroundColor,
       border: Border.all(width: 0, color: Colors.transparent),
       leading: Visibility(
-        visible: showNavIcon,
+        visible: widget.showNavIcon,
         child: CommonUtils.backButton,
       ),
       middle: Text('favorite'.tr),
@@ -55,13 +74,16 @@ class FavoritePage extends GetView<FavoriteController> {
     }
 
     return CupertinoListSection.insetGrouped(
-      backgroundColor: CommonUtils.backgroundColor,
+      // backgroundColor: CommonUtils.backgroundColor,
+      // backgroundColor: CupertinoColors.tertiarySystemBackground.resolveFrom(context),
       margin: EdgeInsets.zero,
       children: [
         Container(
+          color:  CupertinoColors.tertiarySystemBackground.resolveFrom(context),
           height: CommonUtils.isPad ? 80 : 170.h,
           width: double.infinity,
           child: Slidable(
+            controller: sliderController,
             endActionPane: ActionPane(
               motion: ScrollMotion(),
               children: [
@@ -155,7 +177,6 @@ class FavoritePage extends GetView<FavoriteController> {
   }
 
   // ScrollView
-  // Replace to [NestedScrollView]
   Widget _buildCustomScrollView() {
     return CustomScrollView(
       shrinkWrap: false,
@@ -190,7 +211,7 @@ class FavoritePage extends GetView<FavoriteController> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: _buildNavigationBar(),
-      backgroundColor: CommonUtils.backgroundColor,
+      // backgroundColor: CommonUtils.backgroundColor,
       child: _buildCustomScrollView(),
     );
   }

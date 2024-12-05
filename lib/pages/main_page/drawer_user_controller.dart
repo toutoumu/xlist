@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import 'app_theme.dart';
 import 'home_drawer.dart';
@@ -103,110 +104,126 @@ class _DrawerUserControllerState extends State<DrawerUserController>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: AppTheme.white,
-      child: SingleChildScrollView(
-        controller: scrollController,
-        scrollDirection: Axis.horizontal,
-        physics: const PageScrollPhysics(parent: ClampingScrollPhysics()),
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width + widget.drawerWidth,
-          //we use with as screen width and add drawerWidth (from navigation_home_screen)
-          child: Row(
-            children: <Widget>[
-              SizedBox(
-                width: widget.drawerWidth,
-                //we divided first drawer Width with HomeDrawer and second full-screen Width with all home screen, we called screen View
-                height: MediaQuery.of(context).size.height,
-                child: AnimatedBuilder(
-                  animation: iconAnimationController,
-                  builder: (BuildContext context, _) {
-                    return Transform(
-                      //transform we use for the stable drawer  we, not need to move with scroll view
-                      transform: Matrix4.translationValues(
-                          scrollController.offset, 0.0, 0.0),
-                      child: HomeDrawer(
-                        screenIndex: widget.screenIndex,
-                        iconAnimationController: iconAnimationController,
-                        callBackIndex: (DrawerIndex indexType) {
-                          onDrawerClick();
-                          try {
-                            widget.onDrawerCall(indexType);
-                          } catch (e) {
-                            debugPrint('drawer_user_controller?.dart: $e');
-                          }
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                //full-screen Width with widget.screenView
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppTheme.white,
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                          color: AppTheme.grey.withOpacity(0.6),
-                          blurRadius: 24),
-                    ],
-                  ),
-                  child: Stack(
-                    children: <Widget>[
-                      //this IgnorePointer we use as touch(user Interface) widget.screen View, for example scrolloffset == 1 means drawer is close we just allow touching all widget.screen View
-                      IgnorePointer(
-                        ignoring: scrolloffset == 1 || false,
-                        child: widget.screenView,
-                      ),
-                      //alternative touch(user Interface) for widget.screen, for example, drawer is close we need to tap on a few home screen area and close the drawer
-                      if (scrolloffset == 1.0)
-                        GestureDetector(
-                          onTap: () => onDrawerClick(),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        onDrawerClick();
+      },
+      child: Container(
+        // color: CupertinoColors.systemBackground.resolveFrom(context),
+        color: Get.isDarkMode
+            ? CupertinoColors.secondarySystemGroupedBackground
+                .resolveFrom(context)
+                .withOpacity(0.5)
+            : CupertinoColors.systemBackground.resolveFrom(context),
+        child: SingleChildScrollView(
+          controller: scrollController,
+          scrollDirection: Axis.horizontal,
+          physics: const PageScrollPhysics(parent: ClampingScrollPhysics()),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width + widget.drawerWidth,
+            //we use with as screen width and add drawerWidth (from navigation_home_screen)
+            child: Row(
+              children: <Widget>[
+                SizedBox(
+                  width: widget.drawerWidth,
+                  //we divided first drawer Width with HomeDrawer and second full-screen Width with all home screen, we called screen View
+                  height: MediaQuery.of(context).size.height,
+                  child: AnimatedBuilder(
+                    animation: iconAnimationController,
+                    builder: (BuildContext context, _) {
+                      return Transform(
+                        //transform we use for the stable drawer  we, not need to move with scroll view
+                        transform: Matrix4.translationValues(
+                            scrollController.offset, 0.0, 0.0),
+                        child: HomeDrawer(
+                          screenIndex: widget.screenIndex,
+                          iconAnimationController: iconAnimationController,
+                          callBackIndex: (DrawerIndex indexType) {
+                            onDrawerClick();
+                            try {
+                              widget.onDrawerCall(indexType);
+                            } catch (e) {
+                              debugPrint('drawer_user_controller?.dart: $e');
+                            }
+                          },
                         ),
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  //full-screen Width with widget.screenView
+                  child: Container(
+                    decoration: BoxDecoration(
+                      // color: CupertinoColors.destructiveRed.resolveFrom(context),
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                            // color: AppTheme.grey.withOpacity(0.6),
+                            color: Get.isDarkMode
+                                ? Colors.transparent
+                                : CupertinoColors.systemGrey
+                                    .resolveFrom(context)
+                                    .withOpacity(0.6),
+                            blurRadius: 24),
+                      ],
+                    ),
+                    child: Stack(
+                      children: <Widget>[
+                        //this IgnorePointer we use as touch(user Interface) widget.screen View, for example scrolloffset == 1 means drawer is close we just allow touching all widget.screen View
+                        IgnorePointer(
+                          ignoring: scrolloffset == 1 || false,
+                          child: widget.screenView,
+                        ),
+                        //alternative touch(user Interface) for widget.screen, for example, drawer is close we need to tap on a few home screen area and close the drawer
+                        if (scrolloffset == 1.0)
+                          GestureDetector(
+                            onTap: () => onDrawerClick(),
+                          ),
 
-                      // this just menu and arrow icon animation
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: MediaQuery.of(context).padding.top, left: 8),
-                        child: SizedBox(
-                          width: const CupertinoNavigationBar()
-                              .preferredSize
-                              .height,
-                          height: const CupertinoNavigationBar()
-                              .preferredSize
-                              .height,
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(
-                                  const CupertinoNavigationBar()
-                                      .preferredSize
-                                      .height),
-                              onTap: () {
-                                FocusScope.of(context)
-                                    .requestFocus(FocusNode());
-                                onDrawerClick();
-                              },
-                              child: Center(
-                                // if you use your own menu view UI you add form initialization
-                                child: widget.menuView ??
-                                    AnimatedIcon(
-                                        icon: widget.animatedIconData,
-                                        progress: iconAnimationController),
+                        // this just menu and arrow icon animation
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: MediaQuery.of(context).padding.top, left: 8),
+                          child: SizedBox(
+                            width: const CupertinoNavigationBar()
+                                .preferredSize
+                                .height,
+                            height: const CupertinoNavigationBar()
+                                .preferredSize
+                                .height,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(
+                                    const CupertinoNavigationBar()
+                                        .preferredSize
+                                        .height),
+                                onTap: () {
+                                  FocusScope.of(context)
+                                      .requestFocus(FocusNode());
+                                  onDrawerClick();
+                                },
+                                child: Center(
+                                  // if you use your own menu view UI you add form initialization
+                                  child: widget.menuView ??
+                                      AnimatedIcon(
+                                          icon: widget.animatedIconData,
+                                          progress: iconAnimationController),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

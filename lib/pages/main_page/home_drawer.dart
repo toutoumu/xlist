@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:xlist/routes/app_pages.dart';
@@ -75,7 +76,10 @@ class _HomeDrawerState extends State<HomeDrawer> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppTheme.notWhite.withOpacity(0.5),
+      // color: AppTheme.notWhite.withOpacity(0.5),
+      // color: Get.isDarkMode
+      //     ? CupertinoColors.secondarySystemBackground .resolveFrom(context)
+      //     : CupertinoColors.systemBackground.resolveFrom(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
@@ -123,13 +127,14 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       );
                     },
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 8, left: 4),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8, left: 4),
                     child: Text(
-                      'Shaquille Oatmeal',
+                      'Xlist',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: AppTheme.grey,
+                        // color: AppTheme.grey,
+                        color: CupertinoColors.label.resolveFrom(context),
                         fontSize: 18,
                       ),
                     ),
@@ -143,7 +148,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
           ),
           Divider(
             height: 1,
-            color: AppTheme.grey.withOpacity(0.6),
+            // color: AppTheme.grey.withOpacity(0.6),
+            color: CupertinoColors.separator.resolveFrom(context),
           ),
           Expanded(
             child: ListView.builder(
@@ -157,7 +163,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
           ),
           Divider(
             height: 1,
-            color: AppTheme.grey.withOpacity(0.6),
+            // color: AppTheme.grey.withOpacity(0.6),
+            color: CupertinoColors.separator.resolveFrom(context),
           ),
           Column(
             children: <Widget>[
@@ -167,17 +174,19 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   child: ListTile(
                     title: Text(
                       'setting'.tr,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: AppTheme.fontName,
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
-                        color: AppTheme.darkText,
+                        // color: AppTheme.darkText,
+                        color: CupertinoColors.label.resolveFrom(context),
                       ),
                       textAlign: TextAlign.left,
                     ),
-                    trailing: const Icon(
+                    trailing: Icon(
                       Icons.settings,
-                      color: Colors.red,
+                      // color: Colors.red,
+                      color: CupertinoColors.label.resolveFrom(context),
                     ),
                     onTap: () {
                       Get.toNamed(Routes.SETTING);
@@ -234,14 +243,17 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       height: 24,
                       child: Image.asset(listData.imageName,
                           color: widget.screenIndex == listData.index
-                              ? Colors.blue
+                              ? CupertinoColors.systemBlue.resolveFrom(context)
                               : AppTheme.nearlyBlack),
                     )
                   else
-                    Icon(listData.icon?.icon,
-                        color: widget.screenIndex == listData.index
-                            ? Colors.blue
-                            : AppTheme.nearlyBlack),
+                    Icon(
+                      listData.icon?.icon,
+                      color: widget.screenIndex == listData.index
+                          ? Get.theme.primaryColor
+                          // : AppTheme.nearlyBlack,
+                          : CupertinoColors.label.resolveFrom(context),
+                    ),
                   const Padding(
                     padding: EdgeInsets.all(4.0),
                   ),
@@ -251,8 +263,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       fontWeight: FontWeight.w500,
                       fontSize: 16,
                       color: widget.screenIndex == listData.index
-                          ? Colors.blue
-                          : AppTheme.nearlyBlack,
+                          ? Get.theme.primaryColor
+                          // : AppTheme.nearlyBlack,
+                          : CupertinoColors.label.resolveFrom(context),
                     ),
                     textAlign: TextAlign.left,
                   ),
@@ -275,7 +288,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                         width: MediaQuery.of(context).size.width * 0.75 - 64,
                         height: 46,
                         decoration: BoxDecoration(
-                          color: Colors.blue.withOpacity(0.2),
+                          color: Get.theme.primaryColor.withOpacity(0.3),
                           borderRadius: const BorderRadius.only(
                             topRight: Radius.circular(28),
                             bottomRight: Radius.circular(28),
