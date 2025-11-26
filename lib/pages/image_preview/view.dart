@@ -20,7 +20,7 @@ class ImagePreviewPage extends GetView<ImagePreviewController> {
       bottom: 60.r,
       child: AnimatedOpacity(
         opacity: controller.isDragUpdate.value ? 0.0 : 1,
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         child: Container(
           alignment: Alignment.bottomRight,
           child: Text(
@@ -62,7 +62,7 @@ class ImagePreviewPage extends GetView<ImagePreviewController> {
   /// 图片预览
   Widget _buildPhotoViewGallery() {
     if (controller.imageHeaders.isEmpty) {
-      return Center(child: CupertinoActivityIndicator());
+      return const Center(child: CupertinoActivityIndicator());
     }
 
     return PhotoViewGallery.builder(
@@ -70,10 +70,12 @@ class ImagePreviewPage extends GetView<ImagePreviewController> {
       pageController: controller.pageController,
       onPageChanged: controller.onPageChanged,
       itemCount: controller.imageUrls.length,
+
       builder: (context, index) {
         return PhotoViewGalleryPageOptions.customChild(
           minScale: PhotoViewComputedScale.contained * 1.0,
-          maxScale: PhotoViewComputedScale.covered * 2.0,
+          maxScale: PhotoViewComputedScale.covered * 5.0,
+          disableGestures: false,
           child: Obx(
             () => Center(
               child: _buildNetworkImage(controller.imageUrls[index]),
@@ -81,9 +83,9 @@ class ImagePreviewPage extends GetView<ImagePreviewController> {
           ),
         );
       },
-      backgroundDecoration: BoxDecoration(color: Colors.transparent),
+      backgroundDecoration: const BoxDecoration(color: Colors.transparent),
       loadingBuilder: (context, event) =>
-          Center(child: CupertinoActivityIndicator()),
+          const Center(child: CupertinoActivityIndicator()),
     );
   }
 
@@ -106,7 +108,7 @@ class ImagePreviewPage extends GetView<ImagePreviewController> {
           child: CupertinoPageScaffold(
             backgroundColor: Colors.transparent,
             child: DefaultTextStyle(
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
               child: Obx(
                 () => Stack(
                   children: [

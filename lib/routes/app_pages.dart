@@ -28,16 +28,18 @@ import 'package:xlist/pages/video_player_media_kit/view.dart';
 
 import 'package:xlist/routes/middlewares/auth_middleware.dart';
 
+import '../pages/main_page/viewNav.dart';
+
 part 'app_routes.dart';
 
 class AppPages {
   AppPages._();
 
-  static const INITIAL = _Paths.SPLASH;
+  static const String INITIAL = _Paths.SPLASH;
 
   static final routes = [
     unknownRoute,
-    GetPage(name: _Paths.SPLASH, page: () => SplashPage()),
+    GetPage(name: _Paths.SPLASH, page: () => const SplashPage()),
     /*GetPage(
       name: _Paths.HOMEPAGE,
       page: () => Homepage(),
@@ -46,7 +48,7 @@ class AppPages {
     ),*/
     GetPage(
       name: _Paths.HOMEPAGE,
-      page: () => MainPage(),
+      page: () => MainPageNav(),
       binding: HomepageBinding(),
       transitionDuration: Duration.zero,
     ),

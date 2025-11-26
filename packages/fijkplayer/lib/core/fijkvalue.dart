@@ -246,7 +246,22 @@ class FijkValue {
           hashCode == other.hashCode;
 
   @override
-  int get hashCode => hashValues(
+  // int get hashCode => hashValues(
+  //       prepared,
+  //       completed,
+  //       state,
+  //       size,
+  //       rotate,
+  //       videoRenderStart,
+  //       audioRenderStart,
+  //       duration,
+  //       fullScreen,
+  //       exception,
+  //       timedText,
+  //       speed,
+  //       cover,
+  //     );
+  int get hashCode => Object.hashAll([
         prepared,
         completed,
         state,
@@ -260,7 +275,7 @@ class FijkValue {
         timedText,
         speed,
         cover,
-      );
+      ]);
 
   @override
   String toString() {
@@ -371,7 +386,8 @@ class FijkException implements Exception {
           hashCode == other.hashCode;
 
   @override
-  int get hashCode => hashValues(code, message);
+  // int get hashCode => hashValues(code, message);
+  int get hashCode => Object.hashAll([code, message]);
 
   @override
   String toString() {

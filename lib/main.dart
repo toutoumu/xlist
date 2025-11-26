@@ -17,7 +17,7 @@ class XlistApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: Size(1080, 1920),
+      designSize: const Size(1080, 1920),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) => GetMaterialApp(
@@ -25,7 +25,7 @@ class XlistApp extends StatelessWidget {
         theme: themeData(Brightness.light, context),
         darkTheme: themeData(Brightness.dark, context),
         themeMode: ThemeMode.light,
-        home: SplashPage(),
+        home: const SplashPage(),
         initialBinding: SplashBinding(),
         defaultTransition: Transition.cupertino,
         debugShowCheckedModeBanner: false,

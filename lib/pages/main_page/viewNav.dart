@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:subtitle_wrapper_package/bloc/bloc.dart';
 import 'package:xlist/pages/alist/alist_info/view.dart';
 import 'package:xlist/pages/homepage/index.dart';
 import 'package:xlist/pages/setting/about/index.dart';
@@ -13,26 +14,79 @@ import 'package:xlist/pages/setting/server/index.dart';
 import 'drawer_user_controller.dart';
 import 'home_drawer.dart';
 
-class MainPage extends GetView<HomepageController> {
-  MainPage({super.key});
+class MainPageNav extends GetView<HomepageController> {
+  MainPageNav({super.key});
 
   final screenView = Rx<Widget>(const Homepage(showNavIcon: false));
   final drawerIndex = Rx<DrawerIndex>(DrawerIndex.home);
+  final _currentIndex = RxInt(0);
+  late final List<DrawerList> drawerList = <DrawerList>[
+    DrawerList(
+      index: DrawerIndex.home,
+      labelName: 'Home'.tr,
+      icon: const Icon(Icons.home),
+    ),
+    DrawerList(
+      index: DrawerIndex.server,
+      labelName: 'server'.tr,
+      // isAssetsImage: true,
+      icon: const Icon(Icons.cloud),
+    ),
+    /*DrawerList(
+      index: DrawerIndex.favorite,
+      labelName: 'favorite'.tr,
+      // isAssetsImage: true,
+      icon: const Icon(Icons.star_rounded),
+    ),*/
+    /*DrawerList(
+      index: DrawerIndex.history,
+      labelName: 'recent'.tr,
+      // isAssetsImage: true,
+      icon: const Icon(Icons.history_rounded),
+    ),*/
+    DrawerList(
+      index: DrawerIndex.download,
+      labelName: 'download_manager'.tr,
+      icon: const Icon(Icons.download_rounded),
+    ),
+    DrawerList(
+      index: DrawerIndex.alist,
+      labelName: 'appName'.tr,
+      icon: const Icon(Icons.storage_rounded),
+    ),
+    /*DrawerList(
+      index: DrawerIndex.about,
+      labelName: 'About',
+      icon: const Icon(Icons.info),
+    ),*/
+    DrawerList(
+      index: DrawerIndex.setting,
+      labelName: 'setting'.tr,
+      icon: const Icon(Icons.settings),
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
     Get.lazyPut(() => HomepageController());
     return Obx(() {
-      return DrawerUserController(
-        screenIndex: drawerIndex.value,
-        drawerWidth: MediaQuery.of(context).size.width * 0.75,
-        onDrawerCall: (DrawerIndex drawerIndexdata) {
-          changeIndex(drawerIndexdata);
-          //callback from drawer for replace screen as user need with passing DrawerIndex(Enum index)
-        },
-        screenView: screenView.value,
-        //we replace screen view as we need on navigate starting screens like MyHomePage, HelpScreen, FeedbackScreen, etc...
-      );
+      return Scaffold(
+          body: screenView.value,
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: _currentIndex.value,
+            unselectedItemColor: Theme.of(context).unselectedWidgetColor,
+            selectedItemColor: Theme.of(context).primaryColor,
+            items: drawerList
+                .map((e) => BottomNavigationBarItem(
+                      icon: e.icon!,
+                      label: e.labelName,
+                    ))
+                .toList(),
+            onTap: (int index) {
+              _currentIndex.value = index;
+              changeIndex(drawerList[index].index);
+            },
+          ));
     });
   }
 
@@ -113,8 +167,9 @@ class MainPage extends GetView<HomepageController> {
           // Get.toNamed(Routes.SETTING_ABOUT);
           screenView.value = const AboutPage(showNavIcon: false);
         case DrawerIndex.setting:
-          // TODO: Handle this case.
-          throw SettingPage();
+          Get.lazyPut(() => SettingController());
+          // Get.toNamed(Routes.SETTING_ABOUT);
+          screenView.value = const SettingPage();
       }
     }
   }

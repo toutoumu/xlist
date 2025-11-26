@@ -312,7 +312,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
   }
 }
 
-enum DrawerIndex { home, alist, server, favorite, history, download, about }
+enum DrawerIndex { home, alist, server, favorite, history, download, about,setting }
 
 class DrawerList {
   DrawerList({

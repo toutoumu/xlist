@@ -115,7 +115,8 @@ class NewFijkSliderColors {
 
   @override
   int get hashCode =>
-      hashValues(playedColor, bufferedColor, cursorColor, baselineColor);
+      // hashValues(playedColor, bufferedColor, cursorColor, baselineColor);
+      Object.hashAll([playedColor, bufferedColor, cursorColor, baselineColor]);
 }
 
 class _SliderPainter extends CustomPainter {
@@ -195,7 +196,8 @@ class _SliderPainter extends CustomPainter {
       other is _SliderPainter && hashCode == other.hashCode;
 
   @override
-  int get hashCode => hashValues(v, cv, dragging, colors);
+  // int get hashCode => hashValues(v, cv, dragging, colors);
+  int get hashCode => Object.hashAll([v, cv, dragging, colors]);
 
   @override
   bool shouldRepaint(_SliderPainter oldDelegate) {
