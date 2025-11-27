@@ -16,16 +16,16 @@ class ImagePreviewPage extends GetView<ImagePreviewController> {
   Widget _buildExtendedPageIndicator() {
     return Positioned(
       left: 0,
-      right: 50.r,
-      bottom: 60.r,
+      right: 0.r,
+      bottom: 100.r,
       child: AnimatedOpacity(
         opacity: controller.isDragUpdate.value ? 0.0 : 1,
         duration: const Duration(milliseconds: 300),
         child: Container(
-          alignment: Alignment.bottomRight,
+          alignment: Alignment.center,
           child: Text(
             '${controller.currentIndex.value + 1}/${controller.objects.length}',
-            style: Get.textTheme.bodySmall?.copyWith(color: Colors.white),
+            style: Get.textTheme.labelLarge?.copyWith(color: Colors.white),
           ),
         ),
       ),
@@ -40,7 +40,7 @@ class ImagePreviewPage extends GetView<ImagePreviewController> {
         imageUrl: url,
         fit: BoxFit.fitWidth,
         httpHeaders: controller.imageHeaders,
-        placeholder: (context, url) => CupertinoActivityIndicator(),
+        placeholder: (context, url) => const CupertinoActivityIndicator(),
         errorWidget: (context, url, error) => Column(
           children: [
             Icon(
@@ -70,9 +70,9 @@ class ImagePreviewPage extends GetView<ImagePreviewController> {
       pageController: controller.pageController,
       onPageChanged: controller.onPageChanged,
       itemCount: controller.imageUrls.length,
-
       builder: (context, index) {
         return PhotoViewGalleryPageOptions.customChild(
+          controller: controller.photoViewController,
           minScale: PhotoViewComputedScale.contained * 1.0,
           maxScale: PhotoViewComputedScale.covered * 5.0,
           disableGestures: false,
@@ -91,36 +91,50 @@ class ImagePreviewPage extends GetView<ImagePreviewController> {
 
   @override
   Widget build(BuildContext context) {
-    return DismissiblePage(
-      onDismissed: () => Get.back(),
-      isFullScreen: true,
-      direction: DismissiblePageDismissDirection.vertical,
-      backgroundColor: Colors.black,
-      startingOpacity: 1.0,
-      onDragUpdate: (details) {
-        controller.isDragUpdate.value = details.opacity != 1.0;
-      },
-      child: Material(
-        color: Colors.transparent,
-        child: GestureDetector(
-          onTap: () => Get.back(),
-          onLongPress: () => controller.moreActionSheet(),
-          child: CupertinoPageScaffold(
-            backgroundColor: Colors.transparent,
-            child: DefaultTextStyle(
-              style: const TextStyle(color: Colors.white),
-              child: Obx(
-                () => Stack(
-                  children: [
-                    _buildPhotoViewGallery(),
-                    _buildExtendedPageIndicator(),
-                  ],
+    return Stack(children: [
+      DismissiblePage(
+        onDismissed: () => Get.back(),
+        isFullScreen: true,
+        direction: DismissiblePageDismissDirection.vertical,
+        backgroundColor: Colors.black,
+        maxTransformValue: 1,
+        dragSensitivity: 1,
+        minScale: 1,
+        dismissThresholds: const <DismissiblePageDismissDirection, double>{
+          DismissiblePageDismissDirection.vertical: 0.01,
+        },
+        startingOpacity: 1.0,
+        reverseDuration: const Duration(milliseconds: 400),
+        onDragUpdate: (details) {
+          controller.isDragUpdate.value = details.opacity != 1.0;
+        },
+        child: Material(
+          color: Colors.transparent,
+          child: GestureDetector(
+            onTap: () => Get.back(),
+            onDoubleTap: () => Get.back()/*controller.photoViewController.scale ==
+                    PhotoViewComputedScale.contained * 1.0
+                ? PhotoViewComputedScale.covered * 5.0
+                : PhotoViewComputedScale.contained * 1.0*/,
+            onLongPress: () => controller.moreActionSheet(),
+            child: CupertinoPageScaffold(
+              backgroundColor: Colors.transparent,
+              child: DefaultTextStyle(
+                style: const TextStyle(color: Colors.white),
+                child: Obx(
+                  () => Stack(
+                    children: [
+                      _buildPhotoViewGallery(),
+                      // _buildExtendedPageIndicator(),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
         ),
       ),
-    );
+      Obx(() => _buildExtendedPageIndicator()),
+    ]);
   }
 }
