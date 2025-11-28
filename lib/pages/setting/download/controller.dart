@@ -54,6 +54,19 @@ class DownloadController extends GetxController {
     totalSize.value = entities.fold<int>(0, (sum, e) => sum + e.size);
   }
 
+  void resetDownList() async {
+    // 获取任务列表 & 翻转
+    final taskList = await FlutterDownloader.loadTasks() ?? [];
+    tasks.value = taskList.reversed.toList();
+
+    // 获取下载列表
+    entities.value =
+        await DatabaseService.to.database.downloadDao.findAllDownload();
+
+    // 总大小
+    resetTotalSize();
+  }
+
   /// 更新下载状态
   /// [id] 任务 id
   /// [status] 下载状态

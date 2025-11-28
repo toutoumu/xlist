@@ -113,8 +113,8 @@ class MainPage extends GetView<HomepageController> {
           // Get.toNamed(Routes.SETTING_ABOUT);
           screenView.value = const AboutPage(showNavIcon: false);
         case DrawerIndex.setting:
-          // TODO: Handle this case.
-          throw SettingPage();
+          Get.lazyPut(() => SettingController());
+          screenView.value = const SettingPage(showNavIcon: false);
       }
     }
   }

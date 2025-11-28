@@ -12,18 +12,22 @@ import 'package:xlist/pages/setting/index.dart';
 import 'package:xlist/pages/homepage/index.dart';
 
 class SettingPage extends GetView<SettingController> {
-  const SettingPage({Key? key}) : super(key: key);
+  final bool showNavIcon;
+  const SettingPage({Key? key, this.showNavIcon = true}) : super(key: key);
 
   // NavigationBar
   CupertinoNavigationBar _buildNavigationBar() {
     return CupertinoNavigationBar(
       backgroundColor: CommonUtils.backgroundColor,
       border: Border.all(width: 0, color: Colors.transparent),
-      leading: CupertinoButton(
-        padding: EdgeInsets.zero,
-        alignment: Alignment.centerLeft,
-        child: Icon(FontAwesomeIcons.xmark, size: CommonUtils.navIconSize),
-        onPressed: () => Get.back(),
+      leading: Visibility(
+        visible: showNavIcon,
+        child: CupertinoButton(
+          padding: EdgeInsets.zero,
+          alignment: Alignment.centerLeft,
+          child: Icon(FontAwesomeIcons.xmark, size: CommonUtils.navIconSize),
+          onPressed: () => Get.back(),
+        ),
       ),
       middle: Text('setting'.tr),
     );

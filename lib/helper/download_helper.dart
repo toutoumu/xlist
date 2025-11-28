@@ -11,6 +11,7 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
 import 'package:xlist/helper/index.dart';
 import 'package:xlist/models/index.dart';
+import 'package:xlist/pages/setting/download/controller.dart';
 import 'package:xlist/services/index.dart';
 import 'package:xlist/storages/index.dart';
 import 'package:xlist/constants/common.dart';
@@ -91,6 +92,10 @@ class DownloadHelper {
           size: size,
         ),
       );
+
+      // 添加到下载列表
+      final downloadController = Get.find<DownloadController>();
+      downloadController.resetDownList();
 
       SmartDialog.showToast('toast_download_add_success'.tr);
       SmartDialog.dismiss();

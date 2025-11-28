@@ -47,7 +47,7 @@ class MainPageNav extends GetView<HomepageController> {
     DrawerList(
       index: DrawerIndex.download,
       labelName: 'download_manager'.tr,
-      icon: const Icon(Icons.download_rounded),
+      icon: const Icon(Icons.download),
     ),
     DrawerList(
       index: DrawerIndex.alist,
@@ -76,6 +76,7 @@ class MainPageNav extends GetView<HomepageController> {
             currentIndex: _currentIndex.value,
             unselectedItemColor: Theme.of(context).unselectedWidgetColor,
             selectedItemColor: Theme.of(context).primaryColor,
+            type: BottomNavigationBarType.fixed,
             items: drawerList
                 .map((e) => BottomNavigationBarItem(
                       icon: e.icon!,
@@ -169,7 +170,7 @@ class MainPageNav extends GetView<HomepageController> {
         case DrawerIndex.setting:
           Get.lazyPut(() => SettingController());
           // Get.toNamed(Routes.SETTING_ABOUT);
-          screenView.value = const SettingPage();
+          screenView.value = const SettingPage(showNavIcon: false);
       }
     }
   }
