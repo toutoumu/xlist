@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
@@ -34,7 +36,10 @@ class VideoPlayerMediaKitController extends SuperController {
   final currentIndex = 0.obs; // 当前播放文件下标
 
   final showPlaylist = false.obs; // 是否显示播放列表
+  final buffering = true.obs; // 是否缓存中
   final thumbnail = ''.obs; // 视频缩略图
+  final currentPos = const Duration(seconds: 0).obs; // 当前播放进度
+  final duration = const Duration(seconds: 0).obs; // 视频长度
 
   // 自动播放
   final isAutoPlay = Get.find<PreferencesStorage>().isAutoPlay.val;
@@ -85,10 +90,12 @@ class VideoPlayerMediaKitController extends SuperController {
     try {
       if (file.isEmpty) {
         // 网盘文件
+        print('网盘文件: $path$name');
         currentObject.value = await ObjectRepository.get(path: '$path$name');
         // 获取同级目录下的字幕
         _updateSubtitleNameList(currentObject.value.related ?? []);
         thumbnail.value = currentObject.value.thumb ?? '';
+        print('缩略图地址: ${thumbnail.value}');
       } else {
         // 本地下载的文件
         final download = await DatabaseService.to.database.downloadDao
@@ -161,11 +168,20 @@ class VideoPlayerMediaKitController extends SuperController {
     videoPlayer.stream.position.listen((event) {
       // 如果视频长度未获取到那么不处理
       _currentPos = event.inMilliseconds;
+      // 更新当前播放进度
+      currentPos.value = event;
     });
     // 视频长度监听
     videoPlayer.stream.duration.listen((event) {
       _duration = event.inMilliseconds;
+      // 更新视频长度
+      duration.value = event;
       print('视频长度: $_duration');
+    });
+    // 视频长度监听
+    videoPlayer.stream.buffering.listen((event) {
+      buffering.value = event;
+      print('缓存中: $buffering');
     });
     // 音轨,字幕监听
     videoPlayer.stream.tracks.listen((event) async {
@@ -214,12 +230,14 @@ class VideoPlayerMediaKitController extends SuperController {
   Future changePlaylist(int index) async {
     final newObject = objects[index];
     if (newObject.name == currentName.value) {
-      SmartDialog.showToast('toast_current_play_file'.tr);
+      // SmartDialog.showToast('toast_current_play_file'.tr);
       return;
     }
 
     // 获取视频播放地址
-    SmartDialog.showLoading();
+    SmartDialog.showLoading(
+      builder: (context) =>   const CupertinoActivityIndicator(color: Colors.white, radius: 20),
+    );
     try {
       currentObject.value =
           await ObjectRepository.get(path: '$path${newObject.name}');

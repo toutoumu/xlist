@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:photo_view/photo_view.dart';
 
 import 'package:xlist/common/index.dart';
 import 'package:xlist/helper/index.dart';
@@ -31,6 +32,8 @@ class ImagePreviewController extends GetxController {
   final currentIndex = 0.obs;
   final isDragUpdate = false.obs;
   late PageController pageController;
+  final photoViewController = PhotoViewController();
+
 
   @override
   void onInit() async {

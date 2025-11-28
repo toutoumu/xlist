@@ -112,10 +112,12 @@ class ImagePreviewPage extends GetView<ImagePreviewController> {
           color: Colors.transparent,
           child: GestureDetector(
             onTap: () => Get.back(),
-            onDoubleTap: () => Get.back()/*controller.photoViewController.scale ==
-                    PhotoViewComputedScale.contained * 1.0
-                ? PhotoViewComputedScale.covered * 5.0
-                : PhotoViewComputedScale.contained * 1.0*/,
+            /*onDoubleTap: () => {
+              if (controller.photoViewController.scale == 1.0)
+                {controller.photoViewController.scale = 5.0}
+              else
+                {controller.photoViewController.scale = 1.0}
+            },*/
             onLongPress: () => controller.moreActionSheet(),
             child: CupertinoPageScaffold(
               backgroundColor: Colors.transparent,
