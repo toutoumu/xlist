@@ -90,12 +90,10 @@ class VideoPlayerMediaKitController extends SuperController {
     try {
       if (file.isEmpty) {
         // 网盘文件
-        print('网盘文件: $path$name');
         currentObject.value = await ObjectRepository.get(path: '$path$name');
         // 获取同级目录下的字幕
         _updateSubtitleNameList(currentObject.value.related ?? []);
         thumbnail.value = currentObject.value.thumb ?? '';
-        print('缩略图地址: ${thumbnail.value}');
       } else {
         // 本地下载的文件
         final download = await DatabaseService.to.database.downloadDao
@@ -162,7 +160,7 @@ class VideoPlayerMediaKitController extends SuperController {
     // 当前播放的视频
     videoPlayer.stream.playlist.listen((event) async {
       print('当前播放的视频: ${event.index}');
-      await changePlaylist(event.index);
+      await _changePlaylist(event.index);
     });
     // 当前播放进度监听
     videoPlayer.stream.position.listen((event) {
@@ -178,7 +176,7 @@ class VideoPlayerMediaKitController extends SuperController {
       duration.value = event;
       print('视频长度: $_duration');
     });
-    // 视频长度监听
+    // 视频缓存监听
     videoPlayer.stream.buffering.listen((event) {
       buffering.value = event;
       print('缓存中: $buffering');
@@ -227,20 +225,23 @@ class VideoPlayerMediaKitController extends SuperController {
 
   /// 切换播放列表文件
   /// [index] 下标
-  Future changePlaylist(int index) async {
+  Future _changePlaylist(int index) async {
     final newObject = objects[index];
     if (newObject.name == currentName.value) {
       // SmartDialog.showToast('toast_current_play_file'.tr);
       return;
     }
-
+    currentObject.value = ObjectModel();
     // 获取视频播放地址
     SmartDialog.showLoading(
-      builder: (context) =>   const CupertinoActivityIndicator(color: Colors.white, radius: 20),
+      builder: (context) =>
+          const CupertinoActivityIndicator(color: Colors.white, radius: 20),
     );
+
+    ObjectModel tempObj;
     try {
-      currentObject.value =
-          await ObjectRepository.get(path: '$path${newObject.name}');
+      tempObj = await ObjectRepository.get(path: '$path${newObject.name}');
+      thumbnail.value = tempObj.thumb ?? '';
     } catch (e) {
       SmartDialog.dismiss();
       SmartDialog.showToast(e.toString());
@@ -256,7 +257,7 @@ class VideoPlayerMediaKitController extends SuperController {
     subtitleNameList.clear();
 
     // 获取字幕文件名列表
-    _updateSubtitleNameList(currentObject.value.related ?? []);
+    _updateSubtitleNameList(tempObj.related ?? []);
 
     // 重置播放器信息
     SmartDialog.dismiss();
@@ -264,8 +265,9 @@ class VideoPlayerMediaKitController extends SuperController {
     await _getViewingRecord(); // 更新播放进度
 
     // 加入最近浏览
-    await CommonUtils.addRecent(currentObject.value, path, newObject.name!);
+    await CommonUtils.addRecent(tempObj, path, newObject.name!);
 
+    currentObject.value = tempObj;
     SmartDialog.showToast('toast_switch_success'.tr);
   }
 

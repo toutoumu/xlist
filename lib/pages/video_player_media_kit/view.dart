@@ -36,32 +36,41 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
 
   /// 构建页面信息
   Widget _buildPageInfo(BuildContext context) {
-    // 视频加载中
-    if (controller.currentObject.value.rawUrl == null ||
-        controller.buffering.isTrue) {
-      return Expanded(
-        child: Stack(
-          children: [
-            controller.thumbnail.value.isNotEmpty
-                ? CachedNetworkImage(
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.contain,
-                    imageUrl: controller.thumbnail.value,
-                    cacheKey: '${controller.path}${controller.name}',
-                    httpHeaders: controller.httpHeaders,
-                  )
-                : const SizedBox(),
-            const Center(
-              child:
-                  CupertinoActivityIndicator(color: Colors.white, radius: 20),
-            ),
-          ],
-        ),
-      );
-    }
+    final showLoading = controller.currentObject.value.rawUrl == null ||
+        controller.buffering.isTrue;
 
-    return _buildVideoPlayer(context);
+    // 视频加载中
+    // if (controller.currentObject.value.rawUrl == null ||
+    //     controller.buffering.isTrue) {
+    return Stack(
+      children: [
+        // 播放器
+        _buildVideoPlayer(context),
+        // 封面
+        /*Obx(() {
+          final showCover = controller.buffering.isTrue &&
+              controller.thumbnail.value.isNotEmpty;
+          return showCover
+              ? CachedNetworkImage(
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.contain,
+                  imageUrl: controller.thumbnail.value,
+                  httpHeaders: controller.httpHeaders,
+                )
+              : const SizedBox();
+        }),*/
+        // 加载中
+        showLoading
+            ? const Center(
+                child:
+                    CupertinoActivityIndicator(color: Colors.white, radius: 20),
+              )
+            : const SizedBox(),
+      ],
+    );
+    // }
+
     /*
     final videoPlayer = _buildVideoPlayer(context);
     return OrientationBuilder(
@@ -148,14 +157,8 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
     );
   }
 
-  /// FijkView
-  /// [imageProvider] 视频封面
-  Widget _buildFijkView(BuildContext context, {ImageProvider? imageProvider}) {
-    // 音频封面特殊处理一下
-    if (imageProvider == null && PreviewHelper.isAudio(controller.name)) {
-      imageProvider = Assets.common.logo.image().image;
-    }
-
+  // 视频播放器
+  Widget _buildVideoPlayer(BuildContext context) {
     // 移动端播放器配置
     if (Platform.isAndroid || Platform.isIOS) {
       return _buildMobilePlayer(context);
@@ -182,25 +185,27 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
             const CupertinoActivityIndicator(color: Colors.white, radius: 20),
         primaryButtonBar: [
           // 播放列表
-          controller.showPlaylist.isTrue
-              ? Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 0),
-                  margin: const EdgeInsets.symmetric(horizontal: 30),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withAlpha(20),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.list),
-                    iconSize: IconTheme.of(context).size ?? 114,
-                    color: Colors.white,
-                    onPressed: () => {
-                      BottomSheetHelper.showBottomSheet(_buildPlayList(),
-                          expand: false),
-                    },
-                  ),
-                )
-              : const Spacer(),
+          Obx(() {
+            return controller.showPlaylist.isTrue
+                ? Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    margin: const EdgeInsets.symmetric(horizontal: 30),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withAlpha(20),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.list),
+                      iconSize: IconTheme.of(context).size ?? 114,
+                      color: Colors.white,
+                      onPressed: () => {
+                        BottomSheetHelper.showBottomSheet(_buildPlayList(),
+                            expand: false),
+                      },
+                    ),
+                  )
+                : const Spacer();
+          }),
           const Spacer(),
         ],
         buttonBarHeight: 100,
@@ -448,51 +453,6 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
     );
   }
 
-  // 视频播放器
-  Widget _buildVideoPlayer(BuildContext context) {
-    if (controller.thumbnail.isEmpty) {
-      print('视频缩略图为空: ${controller.thumbnail.value}');
-      return _buildFijkView(context);
-    }
-    print('视频缩略图: ${controller.thumbnail.value}');
-    return CachedNetworkImage(
-      imageUrl: controller.thumbnail.value,
-      cacheKey: '${controller.path}${controller.name}',
-      httpHeaders: controller.httpHeaders,
-      imageBuilder: (context, imageProvider) =>
-          _buildFijkView(context, imageProvider: imageProvider),
-      errorWidget: (context, url, error) => _buildFijkView(context),
-    );
-    // return _buildFijkView(context);
-  }
-
-  /// ListTile
-  /// [title] 标题
-  /// [additionalInfo] 右侧信息
-  Widget _buildListTile({
-    required String title,
-    required String additionalInfo,
-  }) {
-    return CupertinoListTile(
-      title: Text(title, style: Get.textTheme.bodyLarge),
-      padding: CommonUtils.isPad
-          ? EdgeInsets.only(left: 10, right: 10)
-          : EdgeInsets.only(left: 40.w, right: 30.w),
-      additionalInfo: Container(
-        width: MediaQuery.of(Get.context!).orientation == Orientation.portrait
-            ? 500.w
-            : 150.w,
-        alignment: Alignment.centerRight,
-        child: Text(
-          additionalInfo,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: Get.textTheme.bodyLarge?.copyWith(color: Colors.grey),
-        ),
-      ),
-    );
-  }
-
   // 简介
   Widget _buildDescription() {
     // 去除最后一个 /
@@ -659,6 +619,33 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
           controller.playMode.val = index!;
           controller.changePlayMode(index);
         },
+      ),
+    );
+  }
+
+  /// ListTile
+  /// [title] 标题
+  /// [additionalInfo] 右侧信息
+  Widget _buildListTile({
+    required String title,
+    required String additionalInfo,
+  }) {
+    return CupertinoListTile(
+      title: Text(title, style: Get.textTheme.bodyLarge),
+      padding: CommonUtils.isPad
+          ? EdgeInsets.only(left: 10, right: 10)
+          : EdgeInsets.only(left: 40.w, right: 30.w),
+      additionalInfo: Container(
+        width: MediaQuery.of(Get.context!).orientation == Orientation.portrait
+            ? 500.w
+            : 150.w,
+        alignment: Alignment.centerRight,
+        child: Text(
+          additionalInfo,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Get.textTheme.bodyLarge?.copyWith(color: Colors.grey),
+        ),
       ),
     );
   }
