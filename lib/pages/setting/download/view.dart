@@ -64,7 +64,7 @@ class DownloadPage extends GetView<DownloadController> {
           height: CommonUtils.isPad ? 80 : 170.h,
           width: double.infinity,
           child: Slidable(
-            startActionPane: task.status == DownloadTaskStatus.complete
+            /*startActionPane: task.status == DownloadTaskStatus.complete
                 ? ActionPane(
                     motion: ScrollMotion(),
                     children: [
@@ -78,7 +78,7 @@ class DownloadPage extends GetView<DownloadController> {
                       )
                     ],
                   )
-                : null,
+                : null,*/
             endActionPane: ActionPane(
               motion: ScrollMotion(),
               children: [
@@ -100,6 +100,16 @@ class DownloadPage extends GetView<DownloadController> {
                         icon: CupertinoIcons.play_circle,
                         foregroundColor: Colors.white,
                         label: 'resume'.tr,
+                      )
+                    : SizedBox(),
+                task.status == DownloadTaskStatus.complete
+                    ? SlidableAction(
+                        onPressed: (context) => Share.shareXFiles(
+                            [XFile('${task.savedDir}/${entity.name}')]),
+                        backgroundColor: CupertinoColors.systemBlue,
+                        foregroundColor: Colors.white,
+                        icon: CupertinoIcons.share,
+                        label: 'setting_other_app_open'.tr,
                       )
                     : SizedBox(),
                 SlidableAction(

@@ -95,6 +95,7 @@ class DownloadHelper {
       SmartDialog.showToast('toast_download_add_success'.tr);
       SmartDialog.dismiss();
     } catch (e) {
+      print(e);
       SmartDialog.dismiss();
       SmartDialog.showToast('toast_download_fail'.tr);
       return;

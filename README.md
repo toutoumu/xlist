@@ -1,5 +1,7 @@
 # xlist
 
+project.pbxproj 修改 FLUTTER_BUILD_MODE = debug; 为 FLUTTER_BUILD_MODE = release;
+
 English | [中文](./README_zh.md)
 
 <a href='https://apps.apple.com/cn/app/id6448833200'><image src='https://xlist.site/assets/images/app-store-badge.png' width='200' /></a>

@@ -37,6 +37,7 @@ class ObjectListComponent extends StatefulWidget {
 
 class _ObjectListComponentState extends State<ObjectListComponent> {
   String get path => widget.path;
+
   List<ObjectModel> get objects => widget.objects;
 
   @override
@@ -45,7 +46,7 @@ class _ObjectListComponentState extends State<ObjectListComponent> {
   }
 
   /// 构建侧滑按钮
-  List<Widget> _buildSlidableAction(ObjectModel object) {
+  List<Widget> _buildSlidableAction(ObjectModel object, int index) {
     return [
       SlidableAction(
         flex: 1,
@@ -65,6 +66,7 @@ class _ObjectListComponentState extends State<ObjectListComponent> {
         foregroundColor: Colors.white,
         icon: CupertinoIcons.ellipsis_circle,
         label: 'more'.tr,
+        padding: EdgeInsets.all(0),
       ),
       SlidableAction(
         flex: 1,
@@ -74,7 +76,26 @@ class _ObjectListComponentState extends State<ObjectListComponent> {
         foregroundColor: Colors.white,
         icon: CupertinoIcons.star,
         label: 'favorite'.tr,
+        padding: EdgeInsets.all(0),
       ),
+      PermissionHelper.canDelete(widget.userInfo)
+          ? SlidableAction(
+              flex: 1,
+              onPressed: (context) async {
+                await ObjectHelper.remove(
+                  path: widget.path,
+                  name: objects[index].name!,
+                  source: widget.source,
+                  pageTag: widget.tag,
+                );
+              },
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+              icon: CupertinoIcons.delete,
+              label: 'delete'.tr,
+              padding: EdgeInsets.all(0),
+            )
+          : SizedBox(),
     ];
   }
 
@@ -105,7 +126,7 @@ class _ObjectListComponentState extends State<ObjectListComponent> {
               objects: objects,
             ),
             child: Slidable(
-              startActionPane: PermissionHelper.canDelete(widget.userInfo)
+              /*startActionPane: PermissionHelper.canDelete(widget.userInfo)
                   ? ActionPane(
                       motion: ScrollMotion(),
                       children: [
@@ -126,10 +147,10 @@ class _ObjectListComponentState extends State<ObjectListComponent> {
                         )
                       ],
                     )
-                  : null,
+                  : null,*/
               endActionPane: ActionPane(
                 motion: ScrollMotion(),
-                children: _buildSlidableAction(objects[index]),
+                children: _buildSlidableAction(objects[index], index),
               ),
               child: Column(
                 children: [
