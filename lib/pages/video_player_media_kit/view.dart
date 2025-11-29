@@ -46,6 +46,7 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
       children: [
         // 播放器
         _buildVideoPlayer(context),
+
         // 封面
         /*Obx(() {
           final showCover = controller.buffering.isTrue &&
@@ -126,7 +127,7 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
       ),
     ]);
 
-    return PullDownButton(
+    /*return PullDownButton(
       itemBuilder: (context) => items,
       buttonBuilder: (context, showMenu) => CupertinoButton(
         onPressed: showMenu,
@@ -136,6 +137,15 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
           CupertinoIcons.ellipsis_circle,
           size: CommonUtils.navIconSize,
         ),
+      ),
+    );*/
+    return PullDownButton(
+      itemBuilder: (context) => items,
+      buttonBuilder: (context, showMenu) => IconButton(
+        icon: const Icon(CupertinoIcons.ellipsis_circle),
+        iconSize: IconTheme.of(context).size ?? 114,
+        color: Colors.white,
+        onPressed: showMenu,
       ),
     );
   }
@@ -207,6 +217,16 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
                 : const Spacer();
           }),
           const Spacer(),
+
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 0),
+            margin: const EdgeInsets.symmetric(horizontal: 30),
+            decoration: BoxDecoration(
+              color: Colors.white.withAlpha(20),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: _buildPullDownButton(),
+          )
         ],
         buttonBarHeight: 100,
         bottomButtonBarMargin:
@@ -215,12 +235,14 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
           Expanded(
             child: Container(
               padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
-              decoration: BoxDecoration(
+              // 设置背景色会遮挡触摸事件
+              /*decoration: BoxDecoration(
                 color: Colors.white.withAlpha(20),
                 borderRadius: BorderRadius.circular(15),
-              ),
+              ),*/
               child: Column(
                 children: [
+                  // 进度条两边的时间
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     mainAxisSize: MainAxisSize.max,
@@ -242,6 +264,7 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
                       }),
                     ],
                   ),
+                  // 播放控制按钮
                   const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     mainAxisSize: MainAxisSize.max,
@@ -294,6 +317,7 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
             ),
           ),
           const Spacer(),
+          // 更多信息
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 5),
             margin: const EdgeInsets.symmetric(horizontal: 30),
@@ -338,11 +362,9 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
         brightnessGesture: true,
         seekOnDoubleTap: true,
         speedUpOnLongPress: true,
-        visibleOnMount: true,
         verticalGestureSensitivity: 200,
         horizontalGestureSensitivity: 1000,
         controlsHoverDuration: const Duration(seconds: 5),
-        primaryButtonBar: [],
         // topBar
         topButtonBarMargin:
             EdgeInsets.only(left: MediaQuery.of(context).padding.left, top: 0),
@@ -366,13 +388,71 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
                 ),
                 // 全屏
                 MaterialFullscreenButton(
-                  icon: const Icon(Icons.fullscreen_exit),
+                  icon: const Icon(Icons.fullscreen),
                   iconSize: IconTheme.of(context).size ?? 14,
                   iconColor: Colors.white,
                 ),
               ],
             ),
           ),
+          const Spacer(),
+          // 更多信息
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            margin:
+                EdgeInsets.only(right: MediaQuery.of(context).padding.right),
+            decoration: BoxDecoration(
+              color: Colors.white.withAlpha(20),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.info_outline),
+              iconSize: IconTheme.of(context).size ?? 114,
+              color: Colors.white,
+              onPressed: () => {
+                BottomSheetHelper.showBottomSheet(_buildDescription(),
+                    expand: false),
+              },
+            ),
+          ),
+        ],
+
+        // 播放列表
+        primaryButtonBar: [
+          // 播放列表
+          Obx(() {
+            return controller.showPlaylist.isTrue
+                ? Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    margin: EdgeInsets.symmetric(
+                        horizontal: MediaQuery.of(context).padding.left),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withAlpha(20),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.list),
+                      iconSize: IconTheme.of(context).size ?? 114,
+                      color: Colors.white,
+                      onPressed: () => {
+                        BottomSheetHelper.showBottomSheet(_buildPlayList(),
+                            expand: false),
+                      },
+                    ),
+                  )
+                : const Spacer();
+          }),
+          const Spacer(),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 0),
+            margin: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).padding.right),
+            decoration: BoxDecoration(
+              color: Colors.white.withAlpha(20),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: _buildPullDownButton(),
+          )
         ],
         // bottomBar
         buttonBarHeight: 96,
@@ -384,10 +464,11 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
           Expanded(
             child: Container(
               padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
-              decoration: BoxDecoration(
+              // 设置背景色会遮挡触摸事件
+              /*decoration: BoxDecoration(
                 color: Colors.white.withAlpha(20),
                 borderRadius: BorderRadius.circular(15),
-              ),
+              ),*/
               child: Column(
                 children: [
                   Row(
@@ -431,8 +512,8 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
         // seekBar
         seekBarMargin: EdgeInsets.only(
             bottom: 72,
-            left: MediaQuery.of(context).padding.left + 70,
-            right: MediaQuery.of(context).padding.right + 70),
+            left: MediaQuery.of(context).padding.left + 80,
+            right: MediaQuery.of(context).padding.right + 80),
         seekBarContainerHeight: 36,
         shiftSubtitlesOnControlsVisibilityChange: true,
       ),
