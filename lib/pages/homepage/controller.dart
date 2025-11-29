@@ -113,6 +113,9 @@ class HomepageController extends GetxController {
       final _list =
           CommonUtils.sortObjectList(data.content ?? [], sortType.value);
 
+      // 解决切换服务器,首页不刷新问题
+      isFirstLoading.value = false;
+
       objects.clear(); // 清空数据
       objects.addAll(_list);
       objects.refresh(); // 刷新数据

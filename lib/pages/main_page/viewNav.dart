@@ -21,44 +21,52 @@ class MainPageNav extends GetView<HomepageController> {
   final drawerIndex = Rx<DrawerIndex>(DrawerIndex.home);
   final _currentIndex = RxInt(0);
   late final List<DrawerList> drawerList = <DrawerList>[
+    // 首页
     DrawerList(
       index: DrawerIndex.home,
       labelName: 'Home'.tr,
       icon: const Icon(Icons.home),
     ),
+    // 服务器
     DrawerList(
       index: DrawerIndex.server,
       labelName: 'server'.tr,
       // isAssetsImage: true,
       icon: const Icon(Icons.cloud),
     ),
+    // 收藏
     /*DrawerList(
       index: DrawerIndex.favorite,
       labelName: 'favorite'.tr,
       // isAssetsImage: true,
       icon: const Icon(Icons.star_rounded),
     ),*/
+    // 最近访问
     /*DrawerList(
       index: DrawerIndex.history,
       labelName: 'recent'.tr,
       // isAssetsImage: true,
       icon: const Icon(Icons.history_rounded),
     ),*/
+    // 下载管理
     DrawerList(
       index: DrawerIndex.download,
       labelName: 'download_manager'.tr,
       icon: const Icon(Icons.download),
     ),
+    // AList
     DrawerList(
       index: DrawerIndex.alist,
       labelName: 'appName'.tr,
       icon: const Icon(Icons.storage_rounded),
     ),
+    // 关于
     /*DrawerList(
       index: DrawerIndex.about,
       labelName: 'About',
       icon: const Icon(Icons.info),
     ),*/
+    // 设置
     DrawerList(
       index: DrawerIndex.setting,
       labelName: 'setting'.tr,
@@ -69,6 +77,8 @@ class MainPageNav extends GetView<HomepageController> {
   @override
   Widget build(BuildContext context) {
     Get.lazyPut(() => HomepageController());
+    Get.lazyPut(() => SettingController());
+    Get.lazyPut(() => ServerController());
     return Obx(() {
       return Scaffold(
           body: screenView.value,
@@ -92,84 +102,34 @@ class MainPageNav extends GetView<HomepageController> {
   }
 
   void changeIndex(DrawerIndex drawerIndexdata) {
-    /*if (drawerIndex.value != drawerIndexdata) {
-      drawerIndex.value = drawerIndexdata;
-    }
-    switch (drawerIndexdata) {
-      case DrawerIndex.alist:
-        Get.toNamed(Routes.ALIST);
-        break;
-      case DrawerIndex.server:
-        Get.lazyPut(() => SettingController());
-        Get.lazyPut(() => ServerController());
-        Get.toNamed(Routes.SETTING_SERVER);
-      case DrawerIndex.favorite:
-        Get.lazyPut(() => FavoriteController());
-        Get.toNamed(Routes.SETTING_FAVORITE);
-      case DrawerIndex.recent:
-        Get.lazyPut(() => RecentController());
-        Get.toNamed(Routes.SETTING_RECENT);
-      case DrawerIndex.download:
-        Get.lazyPut(() => DownloadController());
-        Get.toNamed(Routes.SETTING_DOWNLOAD);
-      case DrawerIndex.about:
-        Get.lazyPut(() => AboutController());
-        Get.toNamed(Routes.SETTING_ABOUT);
-    }*/
     if (drawerIndex.value != drawerIndexdata) {
       drawerIndex.value = drawerIndexdata;
-      /*switch (drawerIndex.value) {
-        case DrawerIndex.alist:
-          screenView.value = const Homepage();
-          break;
-        case DrawerIndex.server:
-          Get.lazyPut(() => SettingController());
-          screenView.value = const SettingPage();
-          break;
-        case DrawerIndex.download:
-          Get.lazyPut(() => AboutController());
-          screenView.value = const AboutPage();
-          break;
-        case DrawerIndex.invite:
-          Get.lazyPut(() => AlistInfoLogic());
-          screenView.value = const AListInfoPage();
-          break;
-        default:
-          break;
-      }*/
       switch (drawerIndexdata) {
         case DrawerIndex.home:
           Get.lazyPut(() => HomepageController());
           screenView.value = const Homepage(showNavIcon: false);
           break;
         case DrawerIndex.alist:
-          // Get.toNamed(Routes.ALIST);
           screenView.value = const AListInfoPage(showNavIcon: false);
           break;
         case DrawerIndex.server:
           Get.lazyPut(() => SettingController());
           Get.lazyPut(() => ServerController());
-          // Get.toNamed(Routes.SETTING_SERVER);
           screenView.value = const ServerPage(showNavIcon: false);
         case DrawerIndex.favorite:
           Get.lazyPut(() => FavoriteController());
-          // Get.toNamed(Routes.SETTING_FAVORITE);
           screenView.value = const FavoritePage(showNavIcon: false);
         case DrawerIndex.history:
           Get.lazyPut(() => RecentController());
-          // Get.toNamed(Routes.SETTING_RECENT);
           screenView.value = const RecentPage(showNavIcon: false);
         case DrawerIndex.download:
           Get.lazyPut(() => DownloadController());
-          // Get.toNamed(Routes.SETTING_DOWNLOAD);
           screenView.value = const DownloadPage(showNavIcon: false);
         case DrawerIndex.about:
           Get.lazyPut(() => AboutController());
-          // Get.toNamed(Routes.SETTING_ABOUT);
           screenView.value = const AboutPage(showNavIcon: false);
         case DrawerIndex.setting:
           Get.lazyPut(() => SettingController());
-          // Get.toNamed(Routes.SETTING_ABOUT);
           screenView.value = const SettingPage(showNavIcon: false);
       }
     }

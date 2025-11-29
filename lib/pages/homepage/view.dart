@@ -51,7 +51,7 @@ class Homepage extends GetView<HomepageController> {
         style: TextStyle(color: Get.theme.textTheme.bodyLarge?.color),
       ),
       trailing: Obx(
-        () => ButtonHelper.createPullDownButton(
+            () => ButtonHelper.createPullDownButton(
           controller: controller,
           path: '/',
           source: PageSource.HOMEPAGE,
@@ -168,7 +168,7 @@ class Homepage extends GetView<HomepageController> {
                 : _buildSliverList(),
           ),
         ),
-        FooterLocator.sliver(),
+        const FooterLocator.sliver(),
       ],
     );
   }
@@ -178,9 +178,9 @@ class Homepage extends GetView<HomepageController> {
     return CupertinoPageScaffold(
       child: EasyRefresh(
         controller: controller.easyRefreshController,
-        header: CupertinoHeader(
+        header: const CupertinoHeader(
             position: IndicatorPosition.locator, safeArea: false),
-        footer: CupertinoFooter(position: IndicatorPosition.locator),
+        footer: const CupertinoFooter(position: IndicatorPosition.locator),
         onRefresh: () async {
           await HapticFeedback.selectionClick();
           await controller.getObjectList();
