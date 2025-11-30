@@ -90,44 +90,47 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
 
   /// 构建下拉按钮
   Widget _buildPullDownButton() {
-    List<PullDownMenuEntry> items = [];
+    return Obx(() {
+      List<PullDownMenuEntry> items = [];
 
-    // 收藏
-    items.add(PullDownMenuItem(
-      title: 'favorite'.tr,
-      onTap: () => controller.favorite(),
-    ));
-
-    // 切换字幕
-    if (controller.subtitleNameList.isNotEmpty ||
-        controller.timedTextTracks.isNotEmpty) {
+      // 收藏
       items.add(PullDownMenuItem(
-        title: 'video_switch_subtitle'.tr,
-        onTap: () => controller.changeSubtitle(),
+        title: 'favorite'.tr,
+        onTap: () => controller.favorite(),
       ));
-    }
 
-    // 切换音轨
-    if (controller.audioTracks.isNotEmpty &&
-        controller.audioTracks.length > 1) {
-      items.add(PullDownMenuItem(
-        title: 'video_switch_audio'.tr,
-        onTap: () => controller.changeAudioTrack(),
-      ));
-    }
+      // 切换字幕
+      if (controller.subtitleNameList.isNotEmpty ||
+          controller.timedTextTracks.isNotEmpty) {
+        items.add(PullDownMenuItem(
+          title: 'video_switch_subtitle'.tr,
+          onTap: () => controller.changeSubtitle(),
+        ));
+      }
 
-    items.addAll([
-      PullDownMenuItem(
-        title: 'pull_down_copy_link'.tr,
-        onTap: () => controller.copyLink(),
-      ),
-      PullDownMenuItem(
-        title: 'pull_down_download_file'.tr,
-        onTap: () => controller.download(),
-      ),
-    ]);
+      // 切换音轨
+      if (controller.audioTracks.isNotEmpty &&
+          controller.audioTracks.length > 1) {
+        items.add(PullDownMenuItem(
+          title: 'video_switch_audio'.tr,
+          onTap: () => controller.changeAudioTrack(),
+        ));
+      }
 
-    /*return PullDownButton(
+      items.addAll([
+        // 复制链接
+        PullDownMenuItem(
+          title: 'pull_down_copy_link'.tr,
+          onTap: () => controller.copyLink(),
+        ),
+        // 下载文件
+        PullDownMenuItem(
+          title: 'pull_down_download_file'.tr,
+          onTap: () => controller.download(),
+        ),
+      ]);
+
+      /*return PullDownButton(
       itemBuilder: (context) => items,
       buttonBuilder: (context, showMenu) => CupertinoButton(
         onPressed: showMenu,
@@ -139,15 +142,16 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
         ),
       ),
     );*/
-    return PullDownButton(
-      itemBuilder: (context) => items,
-      buttonBuilder: (context, showMenu) => IconButton(
-        icon: const Icon(CupertinoIcons.ellipsis_circle),
-        iconSize: IconTheme.of(context).size ?? 114,
-        color: Colors.white,
-        onPressed: showMenu,
-      ),
-    );
+      return PullDownButton(
+        itemBuilder: (context) => items,
+        buttonBuilder: (context, showMenu) => IconButton(
+          icon: const Icon(CupertinoIcons.ellipsis_circle),
+          iconSize: IconTheme.of(context).size ?? 114,
+          color: Colors.white,
+          onPressed: showMenu,
+        ),
+      );
+    });
   }
 
   // NavigationBar
@@ -190,7 +194,7 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
         visibleOnMount: true,
         verticalGestureSensitivity: 200,
         horizontalGestureSensitivity: 1000,
-        controlsHoverDuration: const Duration(seconds: 1115),
+        controlsHoverDuration: const Duration(seconds: 5),
         bufferingIndicatorBuilder: (context) =>
             const CupertinoActivityIndicator(color: Colors.white, radius: 20),
         primaryButtonBar: [
@@ -354,7 +358,6 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
             }),
           )*/
         ],
-        shiftSubtitlesOnControlsVisibilityChange: true,
       ),
       fullscreen: MaterialVideoControlsThemeData(
         seekGesture: true,
@@ -515,7 +518,6 @@ class VideoPlayerMediaKitPage extends GetView<VideoPlayerMediaKitController> {
             left: MediaQuery.of(context).padding.left + 80,
             right: MediaQuery.of(context).padding.right + 80),
         seekBarContainerHeight: 36,
-        shiftSubtitlesOnControlsVisibilityChange: true,
       ),
       child: PopScope(
         canPop: !isFullscreen(context),
